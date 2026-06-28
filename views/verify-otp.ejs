@@ -3,7 +3,7 @@
 <section class="page-header">
   <div class="container">
     <h1>Verify Your Phone</h1>
-    <p>Enter the OTP sent to your phone</p>
+    <p>Check your phone for the OTP</p>
     <div class="breadcrumb">
       <a href="/">Home</a> <i class="fas fa-chevron-right"></i>
       <a href="/signup">Sign Up</a> <i class="fas fa-chevron-right"></i>
@@ -22,17 +22,15 @@
           </div>
         </div>
         <h2>Enter OTP</h2>
-        <p class="auth-subtitle">We sent a 6-digit OTP to <strong>+91 <%= phone %></strong></p>
+        <p class="auth-subtitle">We sent a 6-digit OTP to<br><strong style="color:var(--primary)">+91 <%= phone %></strong></p>
 
         <% if (error) { %>
           <div class="auth-error"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
         <% } %>
 
-        <div class="verification-code-display">
-          <p class="verification-label">Your OTP code:</p>
-          <div class="verification-code"><%= otp %></div>
-          <p class="verification-note">This OTP expires in 10 minutes</p>
-        </div>
+        <% if (typeof otpSent !== 'undefined' && otpSent) { %>
+          <div class="auth-success"><i class="fas fa-check-circle"></i> OTP sent to your phone! Check your messages.</div>
+        <% } %>
 
         <form action="/verify-otp" method="POST" class="auth-form">
           <div class="form-group">

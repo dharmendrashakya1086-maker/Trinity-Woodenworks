@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-const { insertOne, findByKey, findById, updateOne, findAll, getDB } = require('../database');
+const { insertOne, findByKey, findById, updateOne, findAll } = require('../database');
+const { sendVerificationEmail } = require('../services/email');
+const { sendSMS } = require('../services/sms');
 
 const LOCKOUT_ATTEMPTS = 5;
 const LOCKOUT_MINUTES = 5;
@@ -64,7 +66,7 @@ router.get('/signup/email', (req, res) => {
   res.render('signup-email', { title: 'Sign Up with Email', error: null });
 });
 
-router.post('/signup/email', (req, res) => {
+router.post('/signup/email', async (req, res) => {
   const { name, username, email, password, confirm_password } = req.body;
 
   if (!name || !username || !email || !password || !confirm_password) {
@@ -106,7 +108,9 @@ router.post('/signup/email', (req, res) => {
     codeExpiry: codeExpiry.toISOString()
   };
 
-  res.render('verify-email', { title: 'Verify Email', email: email.trim(), code, error: null });
+  const result = await sendVerificationEmail(email.trim(), code, name.trim());
+
+  res.render('verify-email', { title: 'Verify Email', email: email.trim(), error: null, codeSent: true });
 });
 
 router.get('/verify-email', (req, res) => {
@@ -114,7 +118,7 @@ router.get('/verify-email', (req, res) => {
     return res.redirect('/signup/email');
   }
   const ps = req.session.pendingSignup;
-  res.render('verify-email', { title: 'Verify Email', email: ps.email, code: ps.code, error: null });
+  res.render('verify-email', { title: 'Verify Email', email: ps.email, error: null, codeSent: true });
 });
 
 router.post('/verify-email', (req, res) => {
@@ -128,8 +132,8 @@ router.post('/verify-email', (req, res) => {
     delete req.session.pendingSignup;
     return res.render('signup-email', { title: 'Sign Up with Email', error: 'Verification code expired. Please sign up again.', name: ps.name, username: ps.username, email: ps.email });
   }
-  if (code !== ps.code) {
-    return res.render('verify-email', { title: 'Verify Email', email: ps.email, code: ps.code, error: 'Invalid verification code' });
+  if (code.trim() !== ps.code) {
+    return res.render('verify-email', { title: 'Verify Email', email: ps.email, error: 'Invalid verification code', codeSent: true });
   }
 
   const customer = insertOne('customers', {
@@ -159,7 +163,7 @@ router.get('/signup/mobile', (req, res) => {
   res.render('signup-mobile', { title: 'Sign Up with Mobile', error: null });
 });
 
-router.post('/signup/mobile', (req, res) => {
+router.post('/signup/mobile', async (req, res) => {
   const { name, username, phone, password, confirm_password } = req.body;
 
   if (!name || !username || !phone || !password || !confirm_password) {
@@ -201,7 +205,9 @@ router.post('/signup/mobile', (req, res) => {
     otpExpiry: otpExpiry.toISOString()
   };
 
-  res.render('verify-otp', { title: 'Verify Mobile', phone: phone.trim(), otp, error: null });
+  const result = await sendSMS(phone.trim(), otp, name.trim());
+
+  res.render('verify-otp', { title: 'Verify Mobile', phone: phone.trim(), error: null, otpSent: true });
 });
 
 router.get('/verify-otp', (req, res) => {
@@ -209,7 +215,7 @@ router.get('/verify-otp', (req, res) => {
     return res.redirect('/signup/mobile');
   }
   const ps = req.session.pendingSignup;
-  res.render('verify-otp', { title: 'Verify Mobile', phone: ps.phone, otp: ps.otp, error: null });
+  res.render('verify-otp', { title: 'Verify Mobile', phone: ps.phone, error: null, otpSent: true });
 });
 
 router.post('/verify-otp', (req, res) => {
@@ -223,8 +229,8 @@ router.post('/verify-otp', (req, res) => {
     delete req.session.pendingSignup;
     return res.render('signup-mobile', { title: 'Sign Up with Mobile', error: 'OTP expired. Please sign up again.', name: ps.name, username: ps.username, phone: ps.phone });
   }
-  if (otp !== ps.otp) {
-    return res.render('verify-otp', { title: 'Verify Mobile', phone: ps.phone, otp: ps.otp, error: 'Invalid OTP code' });
+  if (otp.trim() !== ps.otp) {
+    return res.render('verify-otp', { title: 'Verify Mobile', phone: ps.phone, error: 'Invalid OTP code', otpSent: true });
   }
 
   const customer = insertOne('customers', {
@@ -251,13 +257,7 @@ router.post('/verify-otp', (req, res) => {
 // ==================== LOGIN ====================
 router.get('/login', (req, res) => {
   if (req.session.customer) return res.redirect('/account');
-  const lockedUntil = req.query.locked;
-  let lockMsg = null;
-  if (lockedUntil) {
-    const secs = Math.max(0, Math.ceil((new Date(lockedUntil) - new Date()) / 1000));
-    if (secs > 0) lockMsg = `Account locked. Try again in ${secs} seconds.`;
-  }
-  res.render('login', { title: 'Login', error: lockMsg || req.query.error || null, login: null });
+  res.render('login', { title: 'Login', error: req.query.error || null, login: null });
 });
 
 router.post('/login', (req, res) => {
@@ -281,7 +281,6 @@ router.post('/login', (req, res) => {
     const updates = recordFailedAttempt(customer);
     const remaining = LOCKOUT_ATTEMPTS - (updates.failed_attempts || 0);
     if (remaining <= 0) {
-      const secs = getLockoutSeconds({ locked_until: updates.locked_until });
       return res.render('login', { title: 'Login', error: `Account locked for ${LOCKOUT_MINUTES} minutes due to too many failed attempts.`, login });
     }
     return res.render('login', { title: 'Login', error: `Wrong password. ${remaining} attempt(s) remaining before lockout.`, login });

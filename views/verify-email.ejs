@@ -3,7 +3,7 @@
 <section class="page-header">
   <div class="container">
     <h1>Verify Your Email</h1>
-    <p>Enter the verification code sent to your email</p>
+    <p>Check your inbox for the verification code</p>
     <div class="breadcrumb">
       <a href="/">Home</a> <i class="fas fa-chevron-right"></i>
       <a href="/signup">Sign Up</a> <i class="fas fa-chevron-right"></i>
@@ -22,17 +22,15 @@
           </div>
         </div>
         <h2>Check Your Email</h2>
-        <p class="auth-subtitle">We sent a 6-digit code to <strong><%= email %></strong></p>
+        <p class="auth-subtitle">We sent a 6-digit verification code to<br><strong style="color:var(--primary)"><%= email %></strong></p>
 
         <% if (error) { %>
           <div class="auth-error"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
         <% } %>
 
-        <div class="verification-code-display">
-          <p class="verification-label">Your verification code:</p>
-          <div class="verification-code"><%= code %></div>
-          <p class="verification-note">This code expires in 10 minutes</p>
-        </div>
+        <% if (typeof codeSent !== 'undefined' && codeSent) { %>
+          <div class="auth-success"><i class="fas fa-check-circle"></i> Verification code sent! Check your inbox (and spam folder).</div>
+        <% } %>
 
         <form action="/verify-email" method="POST" class="auth-form">
           <div class="form-group">
