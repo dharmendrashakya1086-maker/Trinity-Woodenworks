@@ -114,12 +114,17 @@ router.get('/checkout', (req, res) => {
   const settings = {};
   db.get('site_settings').value().forEach(s => settings[s.key] = s.value);
 
+  let customer = null;
+  if (req.session.customer) {
+    customer = db.get('customers').find({ id: req.session.customer.id }).value() || null;
+  }
+
   const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const freeShippingAbove = parseFloat(settings.free_shipping_above) || 1000;
   const shippingCost = subtotal >= freeShippingAbove ? 0 : parseFloat(settings.shipping_cost) || 0;
   const total = subtotal + shippingCost;
 
-  res.render('checkout', { cart, subtotal, shippingCost, total, settings });
+  res.render('checkout', { cart, subtotal, shippingCost, total, settings, customer });
 });
 
 router.get('/cart', (req, res) => {

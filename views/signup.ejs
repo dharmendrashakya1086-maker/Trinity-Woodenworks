@@ -47,6 +47,67 @@
             <label><i class="fas fa-lock"></i> Confirm Password</label>
             <input type="password" name="confirm_password" required placeholder="Re-enter password" minlength="6">
           </div>
+
+          <h3 class="form-section-title"><i class="fas fa-map-marker-alt"></i> Delivery Address</h3>
+
+          <div class="form-group">
+            <label>Street Address / Landmark</label>
+            <input type="text" name="address" required placeholder="House no., street, landmark" value="<%= typeof address !== 'undefined' ? address : '' %>">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>City</label>
+              <input type="text" name="city" required placeholder="City" value="<%= typeof city !== 'undefined' ? city : '' %>">
+            </div>
+            <div class="form-group">
+              <label>State</label>
+              <select name="state" required>
+                <option value="">Select State</option>
+                <option value="Andhra Pradesh" <%= typeof state !== 'undefined' && state === 'Andhra Pradesh' ? 'selected' : '' %>>Andhra Pradesh</option>
+                <option value="Arunachal Pradesh" <%= typeof state !== 'undefined' && state === 'Arunachal Pradesh' ? 'selected' : '' %>>Arunachal Pradesh</option>
+                <option value="Assam" <%= typeof state !== 'undefined' && state === 'Assam' ? 'selected' : '' %>>Assam</option>
+                <option value="Bihar" <%= typeof state !== 'undefined' && state === 'Bihar' ? 'selected' : '' %>>Bihar</option>
+                <option value="Chhattisgarh" <%= typeof state !== 'undefined' && state === 'Chhattisgarh' ? 'selected' : '' %>>Chhattisgarh</option>
+                <option value="Goa" <%= typeof state !== 'undefined' && state === 'Goa' ? 'selected' : '' %>>Goa</option>
+                <option value="Gujarat" <%= typeof state !== 'undefined' && state === 'Gujarat' ? 'selected' : '' %>>Gujarat</option>
+                <option value="Haryana" <%= typeof state !== 'undefined' && state === 'Haryana' ? 'selected' : '' %>>Haryana</option>
+                <option value="Himachal Pradesh" <%= typeof state !== 'undefined' && state === 'Himachal Pradesh' ? 'selected' : '' %>>Himachal Pradesh</option>
+                <option value="Jharkhand" <%= typeof state !== 'undefined' && state === 'Jharkhand' ? 'selected' : '' %>>Jharkhand</option>
+                <option value="Karnataka" <%= typeof state !== 'undefined' && state === 'Karnataka' ? 'selected' : '' %>>Karnataka</option>
+                <option value="Kerala" <%= typeof state !== 'undefined' && state === 'Kerala' ? 'selected' : '' %>>Kerala</option>
+                <option value="Madhya Pradesh" <%= typeof state !== 'undefined' && state === 'Madhya Pradesh' ? 'selected' : '' %>>Madhya Pradesh</option>
+                <option value="Maharashtra" <%= typeof state !== 'undefined' && state === 'Maharashtra' ? 'selected' : '' %>>Maharashtra</option>
+                <option value="Manipur" <%= typeof state !== 'undefined' && state === 'Manipur' ? 'selected' : '' %>>Manipur</option>
+                <option value="Meghalaya" <%= typeof state !== 'undefined' && state === 'Meghalaya' ? 'selected' : '' %>>Meghalaya</option>
+                <option value="Mizoram" <%= typeof state !== 'undefined' && state === 'Mizoram' ? 'selected' : '' %>>Mizoram</option>
+                <option value="Nagaland" <%= typeof state !== 'undefined' && state === 'Nagaland' ? 'selected' : '' %>>Nagaland</option>
+                <option value="Odisha" <%= typeof state !== 'undefined' && state === 'Odisha' ? 'selected' : '' %>>Odisha</option>
+                <option value="Punjab" <%= typeof state !== 'undefined' && state === 'Punjab' ? 'selected' : '' %>>Punjab</option>
+                <option value="Rajasthan" <%= typeof state !== 'undefined' && state === 'Rajasthan' ? 'selected' : '' %>>Rajasthan</option>
+                <option value="Sikkim" <%= typeof state !== 'undefined' && state === 'Sikkim' ? 'selected' : '' %>>Sikkim</option>
+                <option value="Tamil Nadu" <%= typeof state !== 'undefined' && state === 'Tamil Nadu' ? 'selected' : '' %>>Tamil Nadu</option>
+                <option value="Telangana" <%= typeof state !== 'undefined' && state === 'Telangana' ? 'selected' : '' %>>Telangana</option>
+                <option value="Tripura" <%= typeof state !== 'undefined' && state === 'Tripura' ? 'selected' : '' %>>Tripura</option>
+                <option value="Uttar Pradesh" <%= typeof state !== 'undefined' && state === 'Uttar Pradesh' ? 'selected' : '' %>>Uttar Pradesh</option>
+                <option value="Uttarakhand" <%= typeof state !== 'undefined' && state === 'Uttarakhand' ? 'selected' : '' %>>Uttarakhand</option>
+                <option value="West Bengal" <%= typeof state !== 'undefined' && state === 'West Bengal' ? 'selected' : '' %>>West Bengal</option>
+                <option value="Delhi" <%= typeof state !== 'undefined' && state === 'Delhi' ? 'selected' : '' %>>Delhi</option>
+                <option value="Jammu & Kashmir" <%= typeof state !== 'undefined' && state === 'Jammu & Kashmir' ? 'selected' : '' %>>Jammu & Kashmir</option>
+                <option value="Ladakh" <%= typeof state !== 'undefined' && state === 'Ladakh' ? 'selected' : '' %>>Ladakh</option>
+                <option value="Chandigarh" <%= typeof state !== 'undefined' && state === 'Chandigarh' ? 'selected' : '' %>>Chandigarh</option>
+                <option value="Puducherry" <%= typeof state !== 'undefined' && state === 'Puducherry' ? 'selected' : '' %>>Puducherry</option>
+                <option value="Andaman & Nicobar" <%= typeof state !== 'undefined' && state === 'Andaman & Nicobar' ? 'selected' : '' %>>Andaman & Nicobar</option>
+                <option value="Lakshadweep" <%= typeof state !== 'undefined' && state === 'Lakshadweep' ? 'selected' : '' %>>Lakshadweep</option>
+                <option value="Dadra & Nagar Haveli" <%= typeof state !== 'undefined' && state === 'Dadra & Nagar Haveli' ? 'selected' : '' %>>Dadra & Nagar Haveli</option>
+                <option value="Daman & Diu" <%= typeof state !== 'undefined' && state === 'Daman & Diu' ? 'selected' : '' %>>Daman & Diu</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Pincode</label>
+            <input type="text" name="pincode" required placeholder="6-digit pincode" pattern="[0-9]{6}" maxlength="6" value="<%= typeof pincode !== 'undefined' ? pincode : '' %>">
+          </div>
+
           <button type="submit" class="btn btn-primary btn-lg btn-block"><i class="fas fa-paper-plane"></i> Continue</button>
         </form>
 

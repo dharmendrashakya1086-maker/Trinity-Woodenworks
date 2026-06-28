@@ -59,32 +59,35 @@ router.get('/signup', (req, res) => {
 });
 
 router.post('/signup', async (req, res) => {
-  const { name, username, email, password, confirm_password } = req.body;
+  const { name, username, email, password, confirm_password, address, city, state, pincode } = req.body;
 
-  if (!name || !username || !email || !password || !confirm_password) {
-    return res.render('signup', { title: 'Sign Up', error: 'All fields are required', name, username, email });
+  if (!name || !username || !email || !password || !confirm_password || !address || !city || !state || !pincode) {
+    return res.render('signup', { title: 'Sign Up', error: 'All fields are required', name, username, email, address, city, state, pincode });
   }
   if (!/^[A-Za-z\s]+$/.test(name.trim())) {
-    return res.render('signup', { title: 'Sign Up', error: 'Name must contain only letters', name, username, email });
+    return res.render('signup', { title: 'Sign Up', error: 'Name must contain only letters', name, username, email, address, city, state, pincode });
   }
   if (!/^[a-zA-Z0-9_]{3,20}$/.test(username.trim())) {
-    return res.render('signup', { title: 'Sign Up', error: 'Username must be 3-20 characters (letters, numbers, underscore)', name, username, email });
+    return res.render('signup', { title: 'Sign Up', error: 'Username must be 3-20 characters (letters, numbers, underscore)', name, username, email, address, city, state, pincode });
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-    return res.render('signup', { title: 'Sign Up', error: 'Please enter a valid email address', name, username, email });
+    return res.render('signup', { title: 'Sign Up', error: 'Please enter a valid email address', name, username, email, address, city, state, pincode });
   }
   if (password.length < 6) {
-    return res.render('signup', { title: 'Sign Up', error: 'Password must be at least 6 characters', name, username, email });
+    return res.render('signup', { title: 'Sign Up', error: 'Password must be at least 6 characters', name, username, email, address, city, state, pincode });
   }
   if (password !== confirm_password) {
-    return res.render('signup', { title: 'Sign Up', error: 'Passwords do not match', name, username, email });
+    return res.render('signup', { title: 'Sign Up', error: 'Passwords do not match', name, username, email, address, city, state, pincode });
+  }
+  if (!/^[0-9]{6}$/.test(pincode.trim())) {
+    return res.render('signup', { title: 'Sign Up', error: 'Please enter a valid 6-digit pincode', name, username, email, address, city, state, pincode });
   }
 
   if (findByKey('customers', { email: email.toLowerCase().trim() })) {
-    return res.render('signup', { title: 'Sign Up', error: 'Email already registered', name, username, email });
+    return res.render('signup', { title: 'Sign Up', error: 'Email already registered', name, username, email, address, city, state, pincode });
   }
   if (findByKey('customers', { username: username.toLowerCase().trim() })) {
-    return res.render('signup', { title: 'Sign Up', error: 'Username already taken', name, username, email });
+    return res.render('signup', { title: 'Sign Up', error: 'Username already taken', name, username, email, address, city, state, pincode });
   }
 
   const code = generateCode();
@@ -95,6 +98,10 @@ router.post('/signup', async (req, res) => {
     username: username.toLowerCase().trim(),
     email: email.toLowerCase().trim(),
     password: bcrypt.hashSync(password, 10),
+    address: address.trim(),
+    city: city.trim(),
+    state: state.trim(),
+    pincode: pincode.trim(),
     code,
     codeExpiry: codeExpiry.toISOString()
   };
@@ -132,10 +139,10 @@ router.post('/verify-email', (req, res) => {
     password: ps.password,
     email_verified: true,
     phone_verified: false,
-    address: '',
-    city: '',
-    state: '',
-    pincode: ''
+    address: ps.address || '',
+    city: ps.city || '',
+    state: ps.state || '',
+    pincode: ps.pincode || ''
   });
 
   delete req.session.pendingSignup;
