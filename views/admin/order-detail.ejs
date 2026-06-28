@@ -1,0 +1,104 @@
+<%- include('admin-header') %>
+
+<div class="page-title">
+  <h1>Order #<%= order.order_number %></h1>
+  <a href="/admin/orders" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back to Orders</a>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <div class="card-header">
+      <h2><i class="fas fa-user"></i> Customer Details</h2>
+    </div>
+    <div class="card-body">
+      <div class="detail-row"><span>Name:</span><strong><%= order.customer_name %></strong></div>
+      <div class="detail-row"><span>Email:</span><strong><%= order.customer_email %></strong></div>
+      <div class="detail-row"><span>Phone:</span><strong><%= order.customer_phone %></strong></div>
+      <div class="detail-row"><span>Address:</span><strong><%= order.customer_address %></strong></div>
+      <div class="detail-row"><span>City:</span><strong><%= order.customer_city %></strong></div>
+      <div class="detail-row"><span>State:</span><strong><%= order.customer_state %></strong></div>
+      <div class="detail-row"><span>Pincode:</span><strong><%= order.customer_pincode %></strong></div>
+      <% if (order.notes) { %>
+        <div class="detail-row"><span>Notes:</span><strong><%= order.notes %></strong></div>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2><i class="fas fa-info-circle"></i> Order Info</h2>
+    </div>
+    <div class="card-body">
+      <div class="detail-row"><span>Order Date:</span><strong><%= new Date(order.created_at).toLocaleString('en-IN') %></strong></div>
+      <div class="detail-row"><span>Payment Method:</span><strong><%= order.payment_method === 'cod' ? 'Cash on Delivery' : 'Online Payment' %></strong></div>
+      <div class="detail-row"><span>Subtotal:</span><strong>₹<%= order.subtotal.toLocaleString() %></strong></div>
+      <div class="detail-row"><span>Shipping:</span><strong><%= order.shipping_cost > 0 ? '₹' + order.shipping_cost : 'Free' %></strong></div>
+      <div class="detail-row total"><span>Total:</span><strong>₹<%= order.total.toLocaleString() %></strong></div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h2><i class="fas fa-box"></i> Order Items</h2>
+  </div>
+  <div class="card-body">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% items.forEach(item => { %>
+          <tr>
+            <td><%= item.product_name %></td>
+            <td>₹<%= item.product_price.toLocaleString() %></td>
+            <td><%= item.quantity %></td>
+            <td>₹<%= (item.product_price * item.quantity).toLocaleString() %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3"><strong>Total</strong></td>
+          <td><strong>₹<%= order.total.toLocaleString() %></strong></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h2><i class="fas fa-edit"></i> Update Status</h2>
+  </div>
+  <div class="card-body">
+    <form action="/admin/orders/<%= order.id %>/status" method="POST" class="admin-form">
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Order Status</label>
+          <select name="order_status">
+            <% ['pending','confirmed','processing','shipped','delivered','cancelled'].forEach(s => { %>
+              <option value="<%= s %>" <%= order.order_status === s ? 'selected' : '' %>><%= s.charAt(0).toUpperCase() + s.slice(1) %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Payment Status</label>
+          <select name="payment_status">
+            <% ['pending','paid','failed','refunded'].forEach(s => { %>
+              <option value="<%= s %>" <%= order.payment_status === s ? 'selected' : '' %>><%= s.charAt(0).toUpperCase() + s.slice(1) %></option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update Status</button>
+    </form>
+  </div>
+</div>
+
+<%- include('admin-footer') %>

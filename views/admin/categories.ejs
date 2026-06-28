@@ -1,0 +1,184 @@
+<%- include('admin-header') %>
+
+<div class="page-title">
+  <h1>Categories</h1>
+  <button class="btn btn-primary" onclick="document.getElementById('addModal').style.display='flex'"><i class="fas fa-plus"></i> Add Category</button>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <% if (categories.length === 0) { %>
+      <div class="empty-state">
+        <i class="fas fa-tags"></i>
+        <h3>No Categories Yet</h3>
+        <p>Add your first category to get started</p>
+        <button class="btn btn-primary" onclick="document.getElementById('addModal').style.display='flex'"><i class="fas fa-plus"></i> Add Category</button>
+      </div>
+    <% } else { %>
+      <div class="admin-search">
+        <div class="admin-search-wrap">
+          <i class="fas fa-search"></i>
+          <input type="text" id="categorySearch" placeholder="Search categories..." oninput="filterCategories()">
+        </div>
+        <span class="admin-search-count" id="categoryCount"><%= categories.length %> categories</span>
+      </div>
+      <div class="admin-item-list" id="categoryList">
+        <% categories.forEach(cat => { %>
+          <div class="admin-item" data-name="<%= cat.name.toLowerCase() %>" data-desc="<%= (cat.description || '').toLowerCase() %>">
+            <div class="admin-item-main">
+              <div class="admin-item-thumb">
+                <% if (cat.image) { %>
+                  <img src="/uploads/<%= cat.image %>" alt="<%= cat.name %>">
+                <% } else { %>
+                  <div class="img-placeholder"><i class="fas fa-image"></i></div>
+                <% } %>
+              </div>
+              <div class="admin-item-title">
+                <%= cat.name %>
+                <% if (cat.featured) { %>
+                  <span class="badge badge-active"><i class="fas fa-star"></i> Featured</span>
+                <% } %>
+              </div>
+              <div class="admin-item-actions">
+                <form action="/admin/categories/toggle-featured/<%= cat.id %>" method="POST" style="display:inline">
+                  <button type="submit" class="btn btn-xs <%= cat.featured ? 'btn-warning' : 'btn-outline' %>" title="<%= cat.featured ? 'Remove from homepage' : 'Show on homepage' %>">
+                    <i class="fas fa-star"></i>
+                  </button>
+                </form>
+                <button class="btn btn-xs btn-primary" onclick="editCategory(<%= cat.id %>, '<%= cat.name %>', '<%= (cat.description || '').replace(/'/g, "\\'") %>', '<%= cat.image || '' %>', <%= cat.featured ? 1 : 0 %>)"><i class="fas fa-edit"></i></button>
+                <form action="/admin/categories/delete/<%= cat.id %>" method="POST" style="display:inline" onsubmit="return confirm('Delete this category? Products in it will become uncategorized.')">
+                  <button type="submit" class="btn btn-xs btn-danger"><i class="fas fa-trash"></i></button>
+                </form>
+                <button class="btn btn-xs btn-outline admin-item-toggle" onclick="this.closest('.admin-item').classList.toggle('expanded')" title="Details"><i class="fas fa-chevron-down"></i></button>
+              </div>
+            </div>
+            <div class="admin-item-details">
+              <div class="admin-detail"><span class="admin-detail-label">Description</span><span><%= cat.description || 'No description' %></span></div>
+              <div class="admin-detail"><span class="admin-detail-label">Products</span><span><%= cat.product_count %> item(s)</span></div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<!-- Add Category Modal -->
+<div class="modal" id="addModal" style="display:none">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Add Category</h3>
+      <button class="modal-close" onclick="document.getElementById('addModal').style.display='none'">&times;</button>
+    </div>
+    <form action="/admin/categories/add" method="POST" enctype="multipart/form-data">
+      <div class="form-group">
+        <label>Category Name *</label>
+        <input type="text" name="name" required placeholder="e.g., Wooden Decor">
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea name="description" rows="3" placeholder="Describe this category..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Category Image</label>
+        <input type="file" name="image" accept="image/*" id="addCategoryImage" onchange="previewImage(this, 'addPreview')">
+        <div class="image-preview" id="addPreview"></div>
+        <small>Recommended: 800x600px, Max 5MB</small>
+      </div>
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" name="featured" value="1">
+          <span>Show on Homepage</span>
+        </label>
+        <small>Featured categories will appear on the main page</small>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Add Category</button>
+        <button type="button" class="btn btn-outline" onclick="document.getElementById('addModal').style.display='none'">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Category Modal -->
+<div class="modal" id="editModal" style="display:none">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Edit Category</h3>
+      <button class="modal-close" onclick="document.getElementById('editModal').style.display='none'">&times;</button>
+    </div>
+    <form id="editForm" method="POST" enctype="multipart/form-data">
+      <div class="form-group">
+        <label>Category Name *</label>
+        <input type="text" name="name" id="editName" required>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea name="description" id="editDesc" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Category Image</label>
+        <input type="hidden" name="existing_image" id="editExistingImage">
+        <div class="edit-image-preview" id="editImageContainer">
+          <div class="image-preview" id="editPreview"></div>
+        </div>
+        <input type="file" name="image" accept="image/*" id="editCategoryImage" onchange="previewImage(this, 'editPreview')">
+        <small>Leave empty to keep current image</small>
+      </div>
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" name="featured" id="editFeatured" value="1">
+          <span>Show on Homepage</span>
+        </label>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Update</button>
+        <button type="button" class="btn btn-outline" onclick="document.getElementById('editModal').style.display='none'">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function filterCategories() {
+  const query = document.getElementById('categorySearch').value.toLowerCase();
+  const items = document.querySelectorAll('#categoryList .admin-item');
+  let visible = 0;
+  items.forEach(item => {
+    const name = item.dataset.name || '';
+    const desc = item.dataset.desc || '';
+    const match = name.includes(query) || desc.includes(query);
+    item.style.display = match ? '' : 'none';
+    if (match) visible++;
+  });
+  document.getElementById('categoryCount').textContent = visible + ' categor' + (visible === 1 ? 'y' : 'ies');
+}
+
+function editCategory(id, name, desc, image, featured) {
+  document.getElementById('editForm').action = '/admin/categories/edit/' + id;
+  document.getElementById('editName').value = name;
+  document.getElementById('editDesc').value = desc;
+  document.getElementById('editExistingImage').value = image;
+  document.getElementById('editFeatured').checked = featured === 1;
+  const preview = document.getElementById('editPreview');
+  if (image) {
+    preview.innerHTML = '<img src="/uploads/' + image + '" alt="Preview">';
+  } else {
+    preview.innerHTML = '';
+  }
+  document.getElementById('editModal').style.display = 'flex';
+}
+
+function previewImage(input, previewId) {
+  const preview = document.getElementById(previewId);
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      preview.innerHTML = '<img src="' + e.target.result + '" alt="Preview">';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+</script>
+
+<%- include('admin-footer') %>

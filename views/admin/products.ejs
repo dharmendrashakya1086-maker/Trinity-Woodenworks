@@ -1,0 +1,74 @@
+<%- include('admin-header') %>
+
+<div class="page-title">
+  <h1>Products</h1>
+  <a href="/admin/products/add" class="btn btn-primary"><i class="fas fa-plus"></i> Add Product</a>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <% if (products.length === 0) { %>
+      <div class="empty-state">
+        <i class="fas fa-box-open"></i>
+        <h3>No Products Yet</h3>
+        <p>Add your first product to get started</p>
+        <a href="/admin/products/add" class="btn btn-primary"><i class="fas fa-plus"></i> Add Product</a>
+      </div>
+    <% } else { %>
+      <div class="admin-search">
+        <div class="admin-search-wrap">
+          <i class="fas fa-search"></i>
+          <input type="text" id="productSearch" placeholder="Search products..." oninput="filterProducts()">
+        </div>
+        <span class="admin-search-count" id="productCount"><%= products.length %> products</span>
+      </div>
+      <div class="admin-item-list" id="productList">
+        <% products.forEach(product => { %>
+          <div class="admin-item" data-name="<%= product.name.toLowerCase() %>" data-category="<%= (product.category_name || '').toLowerCase() %>">
+            <div class="admin-item-main">
+              <div class="admin-item-thumb">
+                <% if (product.image) { %>
+                  <img src="/uploads/<%= product.image %>" alt="<%= product.name %>">
+                <% } else { %>
+                  <div class="img-placeholder"><i class="fas fa-image"></i></div>
+                <% } %>
+              </div>
+              <div class="admin-item-title"><%= product.name %></div>
+              <div class="admin-item-actions">
+                <a href="/admin/products/edit/<%= product.id %>" class="btn btn-xs btn-primary" title="Edit"><i class="fas fa-edit"></i></a>
+                <form action="/admin/products/delete/<%= product.id %>" method="POST" style="display:inline" onsubmit="return confirm('Delete this product?')">
+                  <button type="submit" class="btn btn-xs btn-danger" title="Delete"><i class="fas fa-trash"></i></button>
+                </form>
+                <button class="btn btn-xs btn-outline admin-item-toggle" onclick="this.closest('.admin-item').classList.toggle('expanded')" title="Details"><i class="fas fa-chevron-down"></i></button>
+              </div>
+            </div>
+            <div class="admin-item-details">
+              <div class="admin-detail"><span class="admin-detail-label">Category</span><span class="badge badge-info"><%= product.category_name || 'N/A' %></span></div>
+              <div class="admin-detail"><span class="admin-detail-label">Price</span><span><% if (product.sale_price) { %><span class="text-muted text-line">₹<%= product.price.toLocaleString() %></span> <span class="text-bold">₹<%= product.sale_price.toLocaleString() %></span><% } else { %>₹<%= product.price.toLocaleString() %><% } %></span></div>
+              <div class="admin-detail"><span class="admin-detail-label">Stock</span><span class="stock-badge <%= product.stock === 0 ? 'out' : (product.stock <= 5 ? 'low' : '') %>"><%= product.stock %></span></div>
+              <div class="admin-detail"><span class="admin-detail-label">Status</span><span class="badge badge-<%= product.status %>"><%= product.status %></span></div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<script>
+function filterProducts() {
+  const query = document.getElementById('productSearch').value.toLowerCase();
+  const items = document.querySelectorAll('#productList .admin-item');
+  let visible = 0;
+  items.forEach(item => {
+    const name = item.dataset.name || '';
+    const category = item.dataset.category || '';
+    const match = name.includes(query) || category.includes(query);
+    item.style.display = match ? '' : 'none';
+    if (match) visible++;
+  });
+  document.getElementById('productCount').textContent = visible + ' product' + (visible === 1 ? '' : 's');
+}
+</script>
+
+<%- include('admin-footer') %>

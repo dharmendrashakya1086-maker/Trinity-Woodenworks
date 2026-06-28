@@ -1,0 +1,66 @@
+<%- include('partials/header') %>
+
+<section class="page-header">
+  <div class="container">
+    <h1>Sign Up with Mobile</h1>
+    <p>Create your account using phone number</p>
+    <div class="breadcrumb">
+      <a href="/">Home</a> <i class="fas fa-chevron-right"></i>
+      <a href="/signup">Sign Up</a> <i class="fas fa-chevron-right"></i>
+      <span>Mobile</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="auth-logo">
+          <div class="logo-circle">
+            <img src="/images/Trinity Woodenworks Logo.png" alt="Trinity Woodenworks">
+          </div>
+        </div>
+        <h2>Sign Up with Mobile</h2>
+        <p class="auth-subtitle">We'll send an OTP to your phone number</p>
+
+        <% if (error) { %>
+          <div class="auth-error"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
+        <% } %>
+
+        <form action="/signup/mobile" method="POST" class="auth-form">
+          <div class="form-group">
+            <label><i class="fas fa-user"></i> Full Name</label>
+            <input type="text" name="name" required placeholder="Your full name" value="<%= typeof name !== 'undefined' ? name : '' %>" pattern="[A-Za-z\s]+" title="Only letters and spaces">
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-at"></i> Username</label>
+            <input type="text" name="username" required placeholder="Choose a username" value="<%= typeof username !== 'undefined' ? username : '' %>" pattern="[a-zA-Z0-9_]{3,20}" title="3-20 characters, letters, numbers, underscore">
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-mobile-alt"></i> Mobile Number</label>
+            <div class="phone-input-group">
+              <span class="phone-prefix">+91</span>
+              <input type="tel" name="phone" required placeholder="10-digit number" pattern="[0-9]{10}" maxlength="10" value="<%= typeof phone !== 'undefined' ? phone : '' %>">
+            </div>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-lock"></i> Password</label>
+            <input type="password" name="password" required placeholder="Min 6 characters" minlength="6">
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-lock"></i> Confirm Password</label>
+            <input type="password" name="confirm_password" required placeholder="Re-enter password" minlength="6">
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg btn-block"><i class="fas fa-paper-plane"></i> Send OTP</button>
+        </form>
+
+        <div class="auth-footer">
+          Already have an account? <a href="/login">Login here</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

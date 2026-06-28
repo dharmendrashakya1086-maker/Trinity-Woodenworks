@@ -1,0 +1,129 @@
+<%- include('partials/header') %>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="container hero-content">
+    <div class="hero-badge">Handcrafted with Love</div>
+    <h1>Trinity <span class="text-accent">Woodenworks</span></h1>
+    <p class="hero-subtitle">Crafted with Passion, Built to Last</p>
+    <p class="hero-desc">Premium handcrafted wooden items made by three friends who share a passion for woodworking. Each piece tells a story of craftsmanship and dedication.</p>
+    <div class="hero-actions">
+      <a href="/shop" class="btn btn-primary btn-lg"><i class="fas fa-shopping-bag"></i> Shop Now</a>
+      <a href="/about" class="btn btn-outline btn-lg"><i class="fas fa-info-circle"></i> Our Story</a>
+    </div>
+    <div class="hero-founders">
+      <span>Founded by Anshuman, Sachin & Sankalp</span>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="container">
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-hand-sparkles"></i></div>
+        <h3>100% Handcrafted</h3>
+        <p>Every piece is carefully handcrafted by skilled artisans</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-leaf"></i></div>
+        <h3>Eco-Friendly</h3>
+        <p>Made from sustainably sourced natural wood</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-truck"></i></div>
+        <h3>Free Shipping</h3>
+        <p>Free delivery on orders above ₹1,000</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+        <h3>Quality Assured</h3>
+        <p>Premium quality wood with lifetime durability</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<% if (featuredCategories.length > 0) { %>
+<section class="section featured-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Our Collection</span>
+      <h2>Featured Categories</h2>
+      <p>Explore our handcrafted collections by category</p>
+    </div>
+    <div class="categories-grid home-categories-grid">
+      <% featuredCategories.forEach(cat => { %>
+        <a href="/shop?category=<%= cat.id %>" class="category-tile">
+          <div class="category-tile-image">
+            <% if (cat.image) { %>
+              <img src="/uploads/<%= cat.image %>" alt="<%= cat.name %>">
+            <% } else { %>
+              <div class="category-tile-icon">
+                <i class="fas <%= cat.icon || 'fa-layer-group' %>"></i>
+              </div>
+            <% } %>
+            <div class="category-tile-overlay"></div>
+          </div>
+          <div class="category-tile-content">
+            <h3><%= cat.name %></h3>
+            <p><%= cat.description %></p>
+            <span class="category-tile-count"><%= cat.product_count %> product<%= cat.product_count !== 1 ? 's' : '' %></span>
+            <span class="category-tile-btn">View Collection <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </a>
+      <% }) %>
+    </div>
+    <div class="section-footer">
+      <a href="/categories" class="btn btn-outline">View All Categories <i class="fas fa-arrow-right"></i></a>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<section class="section about-preview">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-content">
+        <span class="section-tag">Our Story</span>
+        <h2>Three Friends, One Passion</h2>
+        <p>Trinity Woodenworks was born from a shared dream between three friends — <strong>Anshuman</strong>, <strong>Sachin</strong>, and <strong>Sankalp</strong> — who found their calling in the art of woodworking.</p>
+        <p>What started as a hobby in a small workshop has grown into a brand known for its quality craftsmanship, attention to detail, and unique designs. Each piece of wood we work with is transformed into something beautiful, functional, and built to last generations.</p>
+        <p>We believe in sustainable practices, supporting local communities, and creating products that bring warmth and character to every home.</p>
+        <a href="/about" class="btn btn-primary">Read Our Full Story <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div class="about-visual">
+        <div class="about-card">
+          <div class="about-icon"><i class="fas fa-tree"></i></div>
+          <h4>Sustainable Wood</h4>
+          <p>Ethically sourced from local forests</p>
+        </div>
+        <div class="about-card">
+          <div class="about-icon"><i class="fas fa-hammer"></i></div>
+          <h4>Traditional Techniques</h4>
+          <p>Time-honored joinery methods</p>
+        </div>
+        <div class="about-card">
+          <div class="about-icon"><i class="fas fa-heart"></i></div>
+          <h4>Made with Love</h4>
+          <p>Every piece has a personal touch</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section cta-section">
+  <div class="container">
+    <div class="cta-card">
+      <h2>Ready to Transform Your Space?</h2>
+      <p>Browse our collection of handcrafted wooden items and find the perfect piece for your home.</p>
+      <div class="cta-actions">
+        <a href="/shop" class="btn btn-primary btn-lg">Shop Now</a>
+        <a href="/contact" class="btn btn-outline-light btn-lg">Get in Touch</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,53 @@
+<%- include('partials/header') %>
+
+<section class="page-header">
+  <div class="container">
+    <h1>Verify Your Phone</h1>
+    <p>Enter the OTP sent to your phone</p>
+    <div class="breadcrumb">
+      <a href="/">Home</a> <i class="fas fa-chevron-right"></i>
+      <a href="/signup">Sign Up</a> <i class="fas fa-chevron-right"></i>
+      <span>Verify OTP</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="auth-logo">
+          <div class="logo-circle">
+            <img src="/images/Trinity Woodenworks Logo.png" alt="Trinity Woodenworks">
+          </div>
+        </div>
+        <h2>Enter OTP</h2>
+        <p class="auth-subtitle">We sent a 6-digit OTP to <strong>+91 <%= phone %></strong></p>
+
+        <% if (error) { %>
+          <div class="auth-error"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
+        <% } %>
+
+        <div class="verification-code-display">
+          <p class="verification-label">Your OTP code:</p>
+          <div class="verification-code"><%= otp %></div>
+          <p class="verification-note">This OTP expires in 10 minutes</p>
+        </div>
+
+        <form action="/verify-otp" method="POST" class="auth-form">
+          <div class="form-group">
+            <label><i class="fas fa-key"></i> Enter OTP Code</label>
+            <input type="text" name="otp" required placeholder="Enter 6-digit OTP" maxlength="6" pattern="[0-9]{6}" autocomplete="one-time-code" class="otp-input">
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg btn-block"><i class="fas fa-check-circle"></i> Verify & Complete</button>
+        </form>
+
+        <div class="auth-footer">
+          <a href="/signup/mobile"><i class="fas fa-arrow-left"></i> Back to Sign Up</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,49 @@
+<%- include('partials/header') %>
+
+<section class="section">
+  <div class="container">
+    <div class="order-confirmation">
+      <div class="order-success-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      <h1>Order Placed Successfully!</h1>
+      <p>Thank you for shopping with Trinity Woodenworks. We'll start preparing your order right away.</p>
+
+      <div class="order-number-box">
+        <p>Your Order Number</p>
+        <h2><%= order.order_number %></h2>
+      </div>
+
+      <div class="order-info-grid">
+        <div class="order-info-item">
+          <label>Total Amount</label>
+          <span>₹<%= order.total.toLocaleString() %></span>
+        </div>
+        <div class="order-info-item">
+          <label>Payment Method</label>
+          <span><%= order.payment_method === 'cod' ? 'Cash on Delivery' : 'Online Payment' %></span>
+        </div>
+        <div class="order-info-item">
+          <label>Delivery Address</label>
+          <span><%= order.customer_address %>, <%= order.customer_city %>, <%= order.customer_state %> - <%= order.customer_pincode %></span>
+        </div>
+        <div class="order-info-item">
+          <label>Order Status</label>
+          <span class="badge badge-<%= order.order_status %>"><%= order.order_status.charAt(0).toUpperCase() + order.order_status.slice(1) %></span>
+        </div>
+      </div>
+
+      <p style="color: var(--text-muted); margin-bottom: 24px; font-size: 0.9rem;">
+        A confirmation email will be sent to <strong><%= order.customer_email %></strong><br>
+        You can track your order status using order number <strong><%= order.order_number %></strong>
+      </p>
+
+      <div class="order-actions">
+        <a href="/track-order" class="btn btn-primary"><i class="fas fa-shipping-fast"></i> Track Order</a>
+        <a href="/shop" class="btn btn-outline"><i class="fas fa-shopping-bag"></i> Continue Shopping</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

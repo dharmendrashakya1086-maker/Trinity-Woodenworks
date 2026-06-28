@@ -1,0 +1,90 @@
+<%- include('partials/header') %>
+
+<section class="page-header">
+  <div class="container">
+    <h1>Track Your Order</h1>
+    <p>Enter your order number to check status</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="track-order-section">
+      <form action="/track-order" method="POST" class="track-form">
+        <div class="track-input-group">
+          <input type="text" name="order_number" placeholder="Enter Order Number (e.g., TW26061234)" value="<%= order ? order.order_number : '' %>" required>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Track</button>
+        </div>
+      </form>
+
+      <% if (order) { %>
+        <div class="order-tracking-result">
+          <div class="order-header-card">
+            <div>
+              <h2>Order #<%= order.order_number %></h2>
+              <p>Placed on <%= new Date(order.created_at).toLocaleDateString('en-IN', {day:'numeric', month:'long', year:'numeric'}) %></p>
+            </div>
+            <div class="order-total-badge">Total: ₹<%= order.total.toLocaleString() %></div>
+          </div>
+
+          <div class="tracking-steps">
+            <div class="tracking-step <%= ['confirmed','processing','shipped','delivered'].includes(order.order_status) ? 'completed' : (order.order_status === 'pending' ? 'current' : '') %>">
+              <div class="step-icon"><i class="fas fa-check"></i></div>
+              <div class="step-info">
+                <h4>Order Confirmed</h4>
+                <p>Your order has been received</p>
+              </div>
+            </div>
+            <div class="tracking-step <%= ['processing','shipped','delivered'].includes(order.order_status) ? 'completed' : (order.order_status === 'confirmed' ? 'current' : '') %>">
+              <div class="step-icon"><i class="fas fa-cog"></i></div>
+              <div class="step-info">
+                <h4>Processing</h4>
+                <p>We're preparing your order</p>
+              </div>
+            </div>
+            <div class="tracking-step <%= ['shipped','delivered'].includes(order.order_status) ? 'completed' : (order.order_status === 'processing' ? 'current' : '') %>">
+              <div class="step-icon"><i class="fas fa-truck"></i></div>
+              <div class="step-info">
+                <h4>Shipped</h4>
+                <p>Your order is on the way</p>
+              </div>
+            </div>
+            <div class="tracking-step <%= order.order_status === 'delivered' ? 'completed' : '' %>">
+              <div class="step-icon"><i class="fas fa-box-open"></i></div>
+              <div class="step-info">
+                <h4>Delivered</h4>
+                <p>Your order has arrived</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="order-details-grid">
+            <div class="order-detail-card">
+              <h3>Shipping Address</h3>
+              <p><%= order.customer_name %></p>
+              <p><%= order.customer_address %></p>
+              <p><%= order.customer_city %>, <%= order.customer_state %> - <%= order.customer_pincode %></p>
+              <p><i class="fas fa-phone"></i> <%= order.customer_phone %></p>
+            </div>
+            <div class="order-detail-card">
+              <h3>Payment Info</h3>
+              <p>Method: <%= order.payment_method === 'cod' ? 'Cash on Delivery' : 'Online Payment' %></p>
+              <p>Status: <span class="badge badge-<%= order.payment_status %>"><%= order.payment_status %></span></p>
+              <p>Subtotal: ₹<%= order.subtotal.toLocaleString() %></p>
+              <p>Shipping: <%= order.shipping_cost > 0 ? '₹' + order.shipping_cost : 'Free' %></p>
+              <p><strong>Total: ₹<%= order.total.toLocaleString() %></strong></p>
+            </div>
+          </div>
+        </div>
+      <% } else if (typeof searched !== 'undefined' && searched) { %>
+        <div class="empty-state">
+          <i class="fas fa-exclamation-triangle"></i>
+          <h3>Order Not Found</h3>
+          <p>Please check your order number and try again. Order numbers start with "TW" followed by date and 4 digits (e.g., TW26061234).</p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

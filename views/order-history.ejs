@@ -1,0 +1,83 @@
+<%- include('partials/header') %>
+
+<section class="page-header">
+  <div class="container">
+    <h1>My Orders</h1>
+    <p>Track and manage your orders</p>
+    <div class="breadcrumb">
+      <a href="/">Home</a> <i class="fas fa-chevron-right"></i>
+      <a href="/account">Account</a> <i class="fas fa-chevron-right"></i>
+      <span>Orders</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="account-layout">
+      <div class="account-sidebar">
+        <div class="account-user">
+          <div class="account-avatar"><i class="fas fa-user"></i></div>
+          <h3><%= customer.name %></h3>
+          <p><%= customer.email %></p>
+        </div>
+        <nav class="account-nav">
+          <a href="/account" class="account-nav-link"><i class="fas fa-user-edit"></i> Edit Profile</a>
+          <a href="/orders" class="account-nav-link active"><i class="fas fa-box"></i> My Orders</a>
+          <a href="/logout" class="account-nav-link logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+      </div>
+
+      <div class="account-main">
+        <div class="card">
+          <div class="card-header">
+            <h2><i class="fas fa-box"></i> Order History</h2>
+          </div>
+          <div class="card-body">
+            <% if (orders.length === 0) { %>
+              <div class="empty-state">
+                <i class="fas fa-shopping-bag"></i>
+                <h3>No Orders Yet</h3>
+                <p>Start shopping to see your orders here</p>
+                <a href="/categories" class="btn btn-primary"><i class="fas fa-shopping-bag"></i> Start Shopping</a>
+              </div>
+            <% } else { %>
+              <div class="order-list">
+                <% orders.forEach(order => { %>
+                  <div class="order-card">
+                    <div class="order-card-header">
+                      <div>
+                        <span class="order-id">#<%= order.order_number %></span>
+                        <span class="order-date"><%= new Date(order.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></span>
+                      </div>
+                      <span class="badge badge-<%= order.status %>"><%= order.status %></span>
+                    </div>
+                    <div class="order-card-body">
+                      <div class="order-info-row">
+                        <span class="order-label">Total:</span>
+                        <span class="order-value">₹<%= order.total.toLocaleString() %></span>
+                      </div>
+                      <div class="order-info-row">
+                        <span class="order-label">Payment:</span>
+                        <span class="order-value"><%= order.payment_method %></span>
+                      </div>
+                      <div class="order-info-row">
+                        <span class="order-label">Items:</span>
+                        <span class="order-value"><%= order.total_items || 0 %> item(s)</span>
+                      </div>
+                    </div>
+                    <div class="order-card-footer">
+                      <a href="/track-order?order=<%= order.order_number %>" class="btn btn-outline-light btn-sm"><i class="fas fa-truck"></i> Track</a>
+                    </div>
+                  </div>
+                <% }) %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

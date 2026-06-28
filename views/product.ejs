@@ -1,0 +1,156 @@
+<%- include('partials/header') %>
+
+<section class="page-header">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="/">Home</a> <i class="fas fa-chevron-right"></i>
+      <a href="/shop">Shop</a> <i class="fas fa-chevron-right"></i>
+      <span><%= product.name %></span>
+    </div>
+  </div>
+</section>
+
+<section class="section product-detail-section">
+  <div class="container">
+    <div class="product-detail">
+      <div class="product-detail-images">
+        <div class="product-main-image">
+          <% if (product.image) { %>
+            <img src="/uploads/<%= product.image %>" alt="<%= product.name %>" id="mainImage">
+          <% } else { %>
+            <div class="product-placeholder large"><i class="fas fa-image"></i></div>
+          <% } %>
+          <% if (product.sale_price) { %>
+            <span class="product-badge sale">Sale</span>
+          <% } %>
+        </div>
+        <% if (images.length > 0) { %>
+          <div class="product-thumbnails">
+            <% if (product.image) { %>
+              <div class="thumbnail active" onclick="document.getElementById('mainImage').src='/uploads/<%= product.image %>'; document.querySelectorAll('.thumbnail').forEach(t=>t.classList.remove('active')); this.classList.add('active')">
+                <img src="/uploads/<%= product.image %>" alt="<%= product.name %>">
+              </div>
+            <% } %>
+            <% images.forEach(img => { %>
+              <div class="thumbnail" onclick="document.getElementById('mainImage').src='/uploads/<%= img.image %>'; document.querySelectorAll('.thumbnail').forEach(t=>t.classList.remove('active')); this.classList.add('active')">
+                <img src="/uploads/<%= img.image %>" alt="<%= product.name %>">
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+
+      <div class="product-detail-info">
+        <span class="product-category"><%= product.category_name || 'Uncategorized' %></span>
+        <h1><%= product.name %></h1>
+        <div class="product-rating">
+          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+          <span class="rating-count">(Premium Quality)</span>
+        </div>
+        <div class="product-price-detail">
+          <% if (product.sale_price) { %>
+            <span class="price-current large">₹<%= product.sale_price.toLocaleString() %></span>
+            <span class="price-old large">₹<%= product.price.toLocaleString() %></span>
+            <span class="discount-badge"><%= Math.round((1 - product.sale_price/product.price) * 100) %>% Off</span>
+          <% } else { %>
+            <span class="price-current large">₹<%= product.price.toLocaleString() %></span>
+          <% } %>
+        </div>
+
+        <div class="product-stock">
+          <% if (product.stock > 5) { %>
+            <span class="stock-status in-stock"><i class="fas fa-check-circle"></i> In Stock (<%= product.stock %> available)</span>
+          <% } else if (product.stock > 0) { %>
+            <span class="stock-status low-stock"><i class="fas fa-exclamation-circle"></i> Only <%= product.stock %> left — Order soon!</span>
+          <% } else { %>
+            <span class="stock-status out-of-stock"><i class="fas fa-times-circle"></i> Out of Stock</span>
+          <% } %>
+        </div>
+
+        <div class="product-description">
+          <h3>Description</h3>
+          <p><%= product.description || 'No description available for this product.' %></p>
+        </div>
+
+        <% if (product.stock > 0) { %>
+        <div class="product-add-section">
+          <div class="quantity-selector">
+            <label>Quantity:</label>
+            <div class="quantity-controls">
+              <button onclick="updateQty(-1)" class="qty-btn"><i class="fas fa-minus"></i></button>
+              <input type="number" id="quantity" value="1" min="1" max="<%= product.stock %>">
+              <button onclick="updateQty(1)" class="qty-btn"><i class="fas fa-plus"></i></button>
+            </div>
+          </div>
+          <div class="product-buy-buttons">
+            <a href="/buy/<%= product.id %>" class="btn btn-primary btn-lg btn-glow btn-buy-now" id="buyNowBtn">
+              <i class="fas fa-bolt"></i> Buy Now
+            </a>
+            <button class="btn btn-outline-light btn-lg" onclick="addToCartDetail(<%= product.id %>)">
+              <i class="fas fa-cart-plus"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+        <% } else { %>
+        <div class="product-add-section">
+          <button class="btn btn-secondary btn-lg btn-block" disabled>
+            <i class="fas fa-bell"></i> Notify When Available
+          </button>
+        </div>
+        <% } %>
+
+        <div class="product-features">
+          <div class="feature-item"><i class="fas fa-truck"></i> Free shipping on orders above ₹1,000</div>
+          <div class="feature-item"><i class="fas fa-undo"></i> Easy returns within 7 days</div>
+          <div class="feature-item"><i class="fas fa-certificate"></i> Authentic handcrafted guarantee</div>
+          <div class="feature-item"><i class="fas fa-shield-alt"></i> Secure payment on delivery</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<% if (related.length > 0) { %>
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2>You May Also Like</h2>
+    </div>
+    <div class="products-grid">
+      <% related.forEach(rp => { %>
+        <div class="product-card" onclick="window.location='/product/<%= rp.id %>'">
+          <div class="product-image">
+            <% if (rp.image) { %>
+              <img src="/uploads/<%= rp.image %>" alt="<%= rp.name %>">
+            <% } else { %>
+              <div class="product-placeholder"><i class="fas fa-image"></i></div>
+            <% } %>
+          </div>
+          <div class="product-info">
+            <span class="product-category"><%= rp.category_name || '' %></span>
+            <h3 class="product-name"><%= rp.name %></h3>
+            <div class="product-price">
+              <span class="price-current">₹<%= (rp.sale_price || rp.price).toLocaleString() %></span>
+              <% if (rp.sale_price) { %><span class="price-old">₹<%= rp.price.toLocaleString() %></span><% } %>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<script>
+function updateQty(delta) {
+  const input = document.getElementById('quantity');
+  const newVal = parseInt(input.value) + delta;
+  if (newVal >= 1 && newVal <= parseInt(input.max)) input.value = newVal;
+}
+function addToCartDetail(id) {
+  const qty = parseInt(document.getElementById('quantity').value);
+  addToCart(id, qty);
+}
+</script>
+
+<%- include('partials/footer') %>

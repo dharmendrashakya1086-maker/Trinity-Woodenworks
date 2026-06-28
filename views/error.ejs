@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+
+<section class="page-header">
+  <div class="container">
+    <h1>Something Went Wrong</h1>
+    <div class="breadcrumb">
+      <a href="/">Home</a> <i class="fas fa-chevron-right"></i> <span>Error</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="cart-empty">
+      <div class="cart-empty-icon"><i class="fas fa-exclamation-triangle"></i></div>
+      <h2>Oops! An Error Occurred</h2>
+      <p>We're sorry for the inconvenience. Please try again.</p>
+      <div class="cart-empty-actions">
+        <a href="/" class="btn btn-primary"><i class="fas fa-home"></i> Go Home</a>
+        <a href="javascript:location.reload()" class="btn btn-outline"><i class="fas fa-redo"></i> Retry</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

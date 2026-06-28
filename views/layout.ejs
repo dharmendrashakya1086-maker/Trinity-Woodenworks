@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title + ' | ' : '' %>Trinity Woodenworks</title>
+  <meta name="description" content="Trinity Woodenworks - Premium handcrafted wooden items. Crafted with Passion, Built to Last.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="nav-logo">
+        <i class="fas fa-tree"></i>
+        <span>Trinity Woodenworks</span>
+      </a>
+      <button class="nav-toggle" onclick="document.querySelector('.nav-menu').classList.toggle('active')">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="nav-menu">
+        <a href="/" class="nav-link <%= currentPath === '/' ? 'active' : '' %>">Home</a>
+        <a href="/shop" class="nav-link <%= currentPath.startsWith('/shop') || currentPath.startsWith('/product') ? 'active' : '' %>">Shop</a>
+        <a href="/about" class="nav-link <%= currentPath === '/about' ? 'active' : '' %>">About</a>
+        <a href="/contact" class="nav-link <%= currentPath === '/contact' ? 'active' : '' %>">Contact</a>
+        <a href="/track-order" class="nav-link <%= currentPath === '/track-order' ? 'active' : '' %>">Track Order</a>
+      </div>
+      <div class="nav-actions">
+        <a href="/track-order" class="nav-icon" title="Track Order"><i class="fas fa-shipping-fast"></i></a>
+        <a href="/admin/dashboard" class="nav-icon" title="Admin"><i class="fas fa-user-shield"></i></a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <%- body %>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h3><i class="fas fa-tree"></i> Trinity Woodenworks</h3>
+          <p>Crafted with Passion, Built to Last. We are three friends — Anshuman, Sachin, and Sankalp — who share a love for woodworking and craftsmanship.</p>
+          <div class="footer-social">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-whatsapp"></i></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <a href="/shop">Shop All</a>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
+          <a href="/track-order">Track Order</a>
+        </div>
+        <div class="footer-col">
+          <h4>Categories</h4>
+          <a href="/shop?category=1">Wooden Decor</a>
+          <a href="/shop?category=2">Furniture</a>
+          <a href="/shop?category=3">Kitchen & Dining</a>
+          <a href="/shop?category=4">Gifting</a>
+          <a href="/shop?category=5">Custom Orders</a>
+        </div>
+        <div class="footer-col">
+          <h4>Contact Info</h4>
+          <p><i class="fas fa-map-marker-alt"></i> Jaipur, Rajasthan, India</p>
+          <p><i class="fas fa-phone"></i> +91 98765 43210</p>
+          <p><i class="fas fa-envelope"></i> info@trinitywoodenworks.com</p>
+          <p><i class="fas fa-clock"></i> Mon - Sat: 10:00 AM - 7:00 PM</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Trinity Woodenworks. All rights reserved. Made with <i class="fas fa-heart"></i> by Anshuman, Sachin & Sankalp</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<%- include('partials/header') %>
+
+<section class="page-header">
+  <div class="container">
+    <h1>Create Account</h1>
+    <p>Join Trinity Woodenworks today</p>
+    <div class="breadcrumb">
+      <a href="/">Home</a> <i class="fas fa-chevron-right"></i> <span>Sign Up</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="auth-logo">
+          <div class="logo-circle">
+            <img src="/images/Trinity Woodenworks Logo.png" alt="Trinity Woodenworks">
+          </div>
+        </div>
+        <h2>Join Us</h2>
+        <p class="auth-subtitle">Choose how you'd like to sign up</p>
+
+        <div class="signup-options">
+          <a href="/signup/email" class="signup-option-card">
+            <div class="signup-option-icon"><i class="fas fa-envelope"></i></div>
+            <h3>Sign up with Email</h3>
+            <p>Get a verification code sent to your email address</p>
+          </a>
+          <a href="/signup/mobile" class="signup-option-card">
+            <div class="signup-option-icon"><i class="fas fa-mobile-alt"></i></div>
+            <h3>Sign up with Mobile</h3>
+            <p>Get an OTP sent to your phone number</p>
+          </a>
+        </div>
+
+        <div class="auth-footer">
+          Already have an account? <a href="/login">Login here</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

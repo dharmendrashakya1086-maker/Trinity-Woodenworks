@@ -1,0 +1,96 @@
+<%- include('admin-header') %>
+
+<div class="page-title">
+  <h1><%= product ? 'Edit Product' : 'Add Product' %></h1>
+  <a href="/admin/products" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back to Products</a>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <form action="<%= product ? '/admin/products/edit/' + product.id : '/admin/products/add' %>" method="POST" enctype="multipart/form-data" class="admin-form">
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Product Name *</label>
+          <input type="text" name="name" value="<%= product ? product.name : '' %>" required placeholder="e.g., Wooden Flower Vase">
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select name="category_id">
+            <option value="">Select Category</option>
+            <% categories.forEach(cat => { %>
+              <option value="<%= cat.id %>" <%= product && product.category_id == cat.id ? 'selected' : '' %>><%= cat.name %></option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea name="description" rows="4" placeholder="Describe your product..."><%= product ? product.description || '' : '' %></textarea>
+      </div>
+
+      <div class="grid-3">
+        <div class="form-group">
+          <label>Price (₹) *</label>
+          <input type="number" name="price" value="<%= product ? product.price : '' %>" required min="0" step="0.01" placeholder="e.g., 999">
+        </div>
+        <div class="form-group">
+          <label>Sale Price (₹)</label>
+          <input type="number" name="sale_price" value="<%= product && product.sale_price ? product.sale_price : '' %>" min="0" step="0.01" placeholder="Leave blank if no sale">
+        </div>
+        <div class="form-group">
+          <label>Stock Quantity *</label>
+          <input type="number" name="stock" value="<%= product ? product.stock : 0 %>" required min="0" placeholder="e.g., 50">
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Main Product Image</label>
+          <input type="file" name="image" accept="image/*" class="file-input">
+          <% if (product && product.image) { %>
+            <div class="current-image">
+              <img src="/uploads/<%= product.image %>" alt="Current image" style="max-width:100px;margin-top:8px;border-radius:8px">
+              <label><input type="checkbox" name="remove_image" value="1"> Remove image</label>
+              <input type="hidden" name="existing_image" value="<%= product.image %>">
+            </div>
+          <% } %>
+        </div>
+        <div class="form-group">
+          <label>Gallery Images (multiple)</label>
+          <input type="file" name="gallery" accept="image/*" multiple class="file-input">
+          <% if (typeof images !== 'undefined' && images && images.length > 0) { %>
+            <div class="current-gallery">
+              <% images.forEach(img => { %>
+                <div class="gallery-thumb">
+                  <img src="/uploads/<%= img.image %>" alt="Gallery">
+                  <a href="/admin/products/delete-image/<%= img.id %>" class="remove-img" onclick="return confirm('Remove this image?')"><i class="fas fa-times"></i></a>
+                </div>
+              <% }) %>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <% if (product) { %>
+        <div class="form-group">
+          <label>Status</label>
+          <select name="status">
+            <option value="active" <%= product.status === 'active' ? 'selected' : '' %>>Active</option>
+            <option value="inactive" <%= product.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
+          </select>
+        </div>
+        <% } %>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-save"></i> <%= product ? 'Update Product' : 'Add Product' %></button>
+        <a href="/admin/products" class="btn btn-outline btn-lg">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('admin-footer') %>

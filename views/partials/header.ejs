@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title + ' | ' : '' %>Trinity Woodenworks</title>
+  <meta name="description" content="Trinity Woodenworks - Premium handcrafted wooden items. Crafted with Passion, Built to Last.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="nav-overlay" id="navOverlay" onclick="closeMenu()"></div>
+  <div class="nav-menu" id="navMenu">
+    <div class="nav-menu-header">
+      <div class="logo-circle">
+        <img src="/images/Trinity Woodenworks Logo.png" alt="Trinity Woodenworks">
+      </div>
+      <span class="logo-text">
+        <span class="logo-trinity">Trinity</span>
+        <span class="logo-woodenworks">Woodenworks</span>
+      </span>
+    </div>
+    <a href="/" class="nav-link <%= currentPath === '/' ? 'active' : '' %>">Home</a>
+    <a href="/categories" class="nav-link <%= currentPath === '/categories' || currentPath.startsWith('/shop') || currentPath.startsWith('/product') ? 'active' : '' %>">Shop</a>
+    <a href="/about" class="nav-link <%= currentPath === '/about' ? 'active' : '' %>">About</a>
+    <a href="/contact" class="nav-link <%= currentPath === '/contact' ? 'active' : '' %>">Contact</a>
+    <a href="/track-order" class="nav-link <%= currentPath === '/track-order' ? 'active' : '' %>">Track Order</a>
+    <% if (customer) { %>
+      <a href="/account" class="nav-link nav-account-mobile">
+        <i class="fas fa-user"></i> My Account
+      </a>
+      <a href="/orders" class="nav-link nav-account-mobile">
+        <i class="fas fa-box"></i> My Orders
+      </a>
+      <a href="/logout" class="nav-link nav-account-mobile" style="color:var(--danger)">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </a>
+    <% } else { %>
+      <a href="/login" class="nav-link nav-account-mobile">
+        <i class="fas fa-sign-in-alt"></i> Login
+      </a>
+      <a href="/signup" class="nav-link nav-account-mobile">
+        <i class="fas fa-user-plus"></i> Sign Up
+      </a>
+    <% } %>
+  </div>
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="nav-logo">
+        <div class="logo-circle">
+          <img src="/images/Trinity Woodenworks Logo.png" alt="Trinity Woodenworks">
+        </div>
+        <span class="logo-text">
+          <span class="logo-trinity">Trinity</span>
+          <span class="logo-woodenworks">Woodenworks</span>
+        </span>
+      </a>
+      <div class="nav-desktop-links">
+        <a href="/" class="nav-link <%= currentPath === '/' ? 'active' : '' %>">Home</a>
+        <a href="/categories" class="nav-link <%= currentPath === '/categories' || currentPath.startsWith('/shop') || currentPath.startsWith('/product') ? 'active' : '' %>">Shop</a>
+        <a href="/about" class="nav-link <%= currentPath === '/about' ? 'active' : '' %>">About</a>
+        <a href="/contact" class="nav-link <%= currentPath === '/contact' ? 'active' : '' %>">Contact</a>
+        <a href="/track-order" class="nav-link <%= currentPath === '/track-order' ? 'active' : '' %>">Track Order</a>
+      </div>
+      <div class="nav-actions">
+        <a href="/cart" class="nav-icon cart-icon" title="Cart">
+          <i class="fas fa-shopping-bag"></i>
+          <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>
+            <span class="cart-badge"><%= cartCount %></span>
+          <% } %>
+        </a>
+        <% if (customer) { %>
+          <a href="/account" class="nav-icon nav-account-desktop" title="My Account"><i class="fas fa-user"></i></a>
+        <% } else { %>
+          <a href="/login" class="nav-icon nav-account-desktop" title="Login"><i class="fas fa-user"></i></a>
+        <% } %>
+        <button class="nav-toggle" id="navToggle" onclick="toggleMenu()">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+  <script>
+  if (performance.getEntriesByType('navigation')[0].type === 'reload' && window.location.pathname !== '/') {
+    window.location.href = '/';
+  }
+  if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+  }
+  window.scrollTo(0, 0);
+
+  function toggleMenu() {
+    const menu = document.getElementById('navMenu');
+    const overlay = document.getElementById('navOverlay');
+    const toggle = document.getElementById('navToggle');
+    const isOpen = menu.classList.contains('active');
+    if (isOpen) {
+      menu.classList.remove('active');
+      overlay.classList.remove('active');
+      toggle.classList.remove('active');
+      document.body.style.overflow = '';
+    } else {
+      menu.classList.add('active');
+      overlay.classList.add('active');
+      toggle.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+  function closeMenu() {
+    const menu = document.getElementById('navMenu');
+    const overlay = document.getElementById('navOverlay');
+    const toggle = document.getElementById('navToggle');
+    menu.classList.remove('active');
+    overlay.classList.remove('active');
+    toggle.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  </script>

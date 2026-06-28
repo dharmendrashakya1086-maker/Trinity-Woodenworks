@@ -1,0 +1,138 @@
+<%- include('partials/header') %>
+
+<section class="page-header">
+  <div class="container">
+    <h1>Your Cart</h1>
+    <p>Review your items before checkout</p>
+    <div class="breadcrumb">
+      <a href="/">Home</a> <i class="fas fa-chevron-right"></i> <span>Cart</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <% if (cart.length === 0) { %>
+      <div class="cart-empty">
+        <div class="cart-empty-icon">
+          <i class="fas fa-shopping-bag"></i>
+        </div>
+        <h2>Your Cart is Empty</h2>
+        <p>Looks like you haven't added anything to your cart yet. Explore our collections and find something you love!</p>
+        <div class="cart-empty-actions">
+          <a href="/categories" class="btn btn-primary btn-lg btn-glow"><i class="fas fa-th-large"></i> Browse Collections</a>
+          <a href="/shop" class="btn btn-outline-light btn-lg"><i class="fas fa-shopping-bag"></i> View All Products</a>
+        </div>
+      </div>
+    <% } else { %>
+      <div class="cart-layout">
+        <div class="cart-items">
+          <div class="cart-items-header">
+            <span class="cart-col-product">Product</span>
+            <span class="cart-col-price">Price</span>
+            <span class="cart-col-qty">Quantity</span>
+            <span class="cart-col-total">Total</span>
+            <span class="cart-col-action"></span>
+          </div>
+          <% cart.forEach(item => { %>
+            <div class="cart-item" id="cartItem-<%= item.product_id %>">
+              <div class="cart-col-product">
+                <div class="cart-item-image">
+                  <% if (item.image) { %>
+                    <img src="/uploads/<%= item.image %>" alt="<%= item.name %>">
+                  <% } else { %>
+                    <div class="cart-item-placeholder"><i class="fas fa-image"></i></div>
+                  <% } %>
+                </div>
+                <div class="cart-item-info">
+                  <h4><a href="/product/<%= item.product_id %>"><%= item.name %></a></h4>
+                </div>
+              </div>
+              <div class="cart-col-price">₹<%= item.price.toLocaleString() %></div>
+              <div class="cart-col-qty">
+                <div class="cart-qty-controls">
+                  <button onclick="updateCartQty(<%= item.product_id %>, <%= item.quantity - 1 %>)" class="cart-qty-btn"><i class="fas fa-minus"></i></button>
+                  <span class="cart-qty-value"><%= item.quantity %></span>
+                  <button onclick="updateCartQty(<%= item.product_id %>, <%= item.quantity + 1 %>)" class="cart-qty-btn"><i class="fas fa-plus"></i></button>
+                </div>
+              </div>
+              <div class="cart-col-total">₹<%= (item.price * item.quantity).toLocaleString() %></div>
+              <div class="cart-col-action">
+                <button class="cart-remove-btn" onclick="removeCartItem(<%= item.product_id %>)" title="Remove item">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+
+        <div class="cart-summary">
+          <h3>Order Summary</h3>
+          <div class="cart-summary-row">
+            <span>Subtotal (<%= cart.reduce((sum, item) => sum + item.quantity, 0) %> items)</span>
+            <span>₹<%= subtotal.toLocaleString() %></span>
+          </div>
+          <div class="cart-summary-row">
+            <span>Shipping</span>
+            <span><%= shippingCost > 0 ? '₹' + shippingCost : 'FREE' %></span>
+          </div>
+          <div class="cart-summary-row total">
+            <span>Total</span>
+            <span>₹<%= (subtotal + shippingCost).toLocaleString() %></span>
+          </div>
+          <a href="/checkout" class="btn btn-primary btn-lg btn-block btn-glow">
+            <i class="fas fa-lock"></i> Proceed to Checkout
+          </a>
+          <a href="/categories" class="cart-continue-link"><i class="fas fa-arrow-left"></i> Continue Shopping</a>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<script>
+function updateCartQty(productId, newQty) {
+  if (newQty < 1) {
+    removeCartItem(productId);
+    return;
+  }
+  fetch('/api/cart/update', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ product_id: productId, quantity: newQty })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      updateCartBadge(data.cartCount);
+      location.reload();
+    }
+  })
+  .catch(() => showToast('Something went wrong', 'error'));
+}
+
+function removeCartItem(productId) {
+  const item = document.getElementById('cartItem-' + productId);
+  if (item) {
+    item.style.opacity = '0';
+    item.style.transform = 'translateX(30px)';
+    item.style.transition = 'all 0.3s ease';
+  }
+
+  fetch('/api/cart/remove', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ product_id: productId })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      updateCartBadge(data.cartCount);
+      setTimeout(() => location.reload(), 300);
+    }
+  })
+  .catch(() => showToast('Something went wrong', 'error'));
+}
+</script>
+
+

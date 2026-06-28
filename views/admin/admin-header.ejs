@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title + ' | ' : '' %>Admin | Trinity Woodenworks</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo"><i class="fas fa-tree"></i></div>
+        <span>Trinity Admin</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="/admin/dashboard" class="sidebar-link <%= currentPath === '/admin/dashboard' ? 'active' : '' %>"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a href="/admin/products" class="sidebar-link <%= currentPath.includes('/admin/products') ? 'active' : '' %>"><i class="fas fa-box"></i> Products</a>
+        <a href="/admin/categories" class="sidebar-link <%= currentPath === '/admin/categories' ? 'active' : '' %>"><i class="fas fa-tags"></i> Categories</a>
+        <a href="/admin/orders" class="sidebar-link <%= currentPath.includes('/admin/orders') ? 'active' : '' %>"><i class="fas fa-shopping-cart"></i> Orders</a>
+        <a href="/admin/settings" class="sidebar-link <%= currentPath === '/admin/settings' ? 'active' : '' %>"><i class="fas fa-cog"></i> Settings</a>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="/" class="sidebar-link"><i class="fas fa-globe"></i> View Website</a>
+        <a href="/admin/logout" class="sidebar-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </div>
+    </aside>
+    <main class="admin-main">
+      <header class="admin-header">
+        <button class="admin-toggle" onclick="document.querySelector('.admin-sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+        <div class="admin-header-right">
+          <span class="admin-user"><i class="fas fa-user-shield"></i> <%= typeof adminUser !== 'undefined' && adminUser ? adminUser.name : 'Admin' %></span>
+        </div>
+      </header>
+      <div class="admin-content">

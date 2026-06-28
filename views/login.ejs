@@ -1,0 +1,49 @@
+<%- include('partials/header') %>
+
+<section class="page-header">
+  <div class="container">
+    <h1>Login</h1>
+    <p>Welcome back to Trinity Woodenworks</p>
+    <div class="breadcrumb">
+      <a href="/">Home</a> <i class="fas fa-chevron-right"></i> <span>Login</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="auth-logo">
+          <div class="logo-circle">
+            <img src="/images/Trinity Woodenworks Logo.png" alt="Trinity Woodenworks">
+          </div>
+        </div>
+        <h2>Welcome Back</h2>
+        <p class="auth-subtitle">Login with your email, phone, or username</p>
+
+        <% if (error) { %>
+          <div class="auth-error"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
+        <% } %>
+
+        <form action="/login" method="POST" class="auth-form">
+          <div class="form-group">
+            <label><i class="fas fa-user"></i> Email / Phone / Username</label>
+            <input type="text" name="login" required placeholder="Email, phone number, or username" value="<%= typeof login !== 'undefined' && login ? login : '' %>" autocomplete="username">
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-lock"></i> Password</label>
+            <input type="password" name="password" required placeholder="Enter your password" autocomplete="current-password">
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg btn-block"><i class="fas fa-sign-in-alt"></i> Login</button>
+        </form>
+
+        <div class="auth-footer">
+          Don't have an account? <a href="/signup">Sign up here</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

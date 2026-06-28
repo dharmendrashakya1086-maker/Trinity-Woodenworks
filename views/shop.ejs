@@ -1,0 +1,160 @@
+<%- include('partials/header') %>
+
+<section class="page-header">
+  <div class="container">
+    <h1><%= currentCategory ? currentCategory.name : 'Our Collection' %></h1>
+    <p><%= currentCategory ? currentCategory.description : 'Discover our range of handcrafted wooden treasures' %></p>
+    <div class="breadcrumb">
+      <a href="/">Home</a> <i class="fas fa-chevron-right"></i>
+      <% if (currentCategory) { %>
+        <a href="/categories">Categories</a> <i class="fas fa-chevron-right"></i>
+      <% } %>
+      <span>Shop</span>
+    </div>
+  </div>
+</section>
+
+<section class="section shop-section">
+  <div class="container">
+
+    <!-- Mobile filters - OUTSIDE shop-layout -->
+    <div class="mobile-filters">
+      <div class="mobile-filter-row">
+        <button class="mobile-filter-toggle" onclick="toggleMobileFilters()">
+          <i class="fas fa-sliders-h"></i> Filters
+        </button>
+        <% if (category || search) { %>
+          <a href="/shop" class="mobile-clear-btn"><i class="fas fa-times"></i> Clear</a>
+        <% } %>
+      </div>
+      <div class="mobile-filters-bar" id="mobileFiltersBar">
+        <div class="mobile-filter-group">
+          <form action="/shop" method="GET" class="mobile-search">
+            <input type="text" name="search" placeholder="Search products..." value="<%= search %>">
+            <button type="submit"><i class="fas fa-search"></i></button>
+          </form>
+        </div>
+        <div class="mobile-filter-group">
+          <span class="mobile-label">Sort By</span>
+          <div class="mobile-chips">
+            <a href="/shop?sort=newest<%= category ? '&category=' + category : '' %><%= search ? '&search=' + search : '' %>" class="chip <%= sort === 'newest' ? 'active' : '' %>">Newest</a>
+            <a href="/shop?sort=price_low<%= category ? '&category=' + category : '' %><%= search ? '&search=' + search : '' %>" class="chip <%= sort === 'price_low' ? 'active' : '' %>">Price Low</a>
+            <a href="/shop?sort=price_high<%= category ? '&category=' + category : '' %><%= search ? '&search=' + search : '' %>" class="chip <%= sort === 'price_high' ? 'active' : '' %>">Price High</a>
+            <a href="/shop?sort=name<%= category ? '&category=' + category : '' %><%= search ? '&search=' + search : '' %>" class="chip <%= sort === 'name' ? 'active' : '' %>">A-Z</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="shop-layout">
+      <aside class="shop-sidebar">
+        <div class="sidebar-section">
+          <h3>Search</h3>
+          <form action="/shop" method="GET" class="search-form">
+            <input type="text" name="search" placeholder="Search products..." value="<%= search %>">
+            <button type="submit"><i class="fas fa-search"></i></button>
+          </form>
+        </div>
+        <div class="sidebar-section">
+          <h3>Sort By</h3>
+          <div class="filter-list">
+            <a href="/shop?sort=newest<%= category ? '&category=' + category : '' %><%= search ? '&search=' + search : '' %>" class="filter-item <%= sort === 'newest' ? 'active' : '' %>">Newest</a>
+            <a href="/shop?sort=price_low<%= category ? '&category=' + category : '' %><%= search ? '&search=' + search : '' %>" class="filter-item <%= sort === 'price_low' ? 'active' : '' %>">Price: Low to High</a>
+            <a href="/shop?sort=price_high<%= category ? '&category=' + category : '' %><%= search ? '&search=' + search : '' %>" class="filter-item <%= sort === 'price_high' ? 'active' : '' %>">Price: High to Low</a>
+            <a href="/shop?sort=name<%= category ? '&category=' + category : '' %><%= search ? '&search=' + search : '' %>" class="filter-item <%= sort === 'name' ? 'active' : '' %>">Name (A-Z)</a>
+          </div>
+        </div>
+        <div class="sidebar-section">
+          <a href="/categories" class="btn btn-outline-light btn-sm btn-block"><i class="fas fa-th-large"></i> Browse Categories</a>
+        </div>
+      </aside>
+
+      <div class="shop-main">
+        <div class="shop-header">
+          <% if (currentCategory) { %>
+            <a href="/categories" class="btn btn-outline-light btn-sm shop-back-btn"><i class="fas fa-arrow-left"></i> Back to Categories</a>
+          <% } else { %>
+            <p><strong><%= total %></strong> product<%= total !== 1 ? 's' : '' %> found</p>
+          <% } %>
+          <p><strong><%= total %></strong> product<%= total !== 1 ? 's' : '' %> found</p>
+        </div>
+
+        <% if (products.length === 0) { %>
+          <div class="empty-state">
+            <i class="fas fa-search"></i>
+            <h3>No products found</h3>
+            <p>Try adjusting your search or filter criteria</p>
+            <a href="/shop" class="btn btn-primary">View All Products</a>
+          </div>
+        <% } else { %>
+          <div class="products-grid shop-grid">
+            <% products.forEach(product => { %>
+              <div class="product-card" onclick="window.location='/product/<%= product.id %>'">
+                <div class="product-image">
+                  <% if (product.image) { %>
+                    <img src="/uploads/<%= product.image %>" alt="<%= product.name %>">
+                  <% } else { %>
+                    <div class="product-placeholder"><i class="fas fa-image"></i></div>
+                  <% } %>
+                  <% if (product.sale_price) { %>
+                    <span class="product-badge sale">Sale</span>
+                  <% } %>
+                  <% if (product.stock <= 0) { %>
+                    <span class="product-badge out-of-stock">Out of Stock</span>
+                  <% } %>
+                </div>
+                <div class="product-info">
+                  <span class="product-category"><%= product.category_name || 'Uncategorized' %></span>
+                  <h3 class="product-name"><%= product.name %></h3>
+                  <div class="product-price">
+                    <% if (product.sale_price) { %>
+                      <span class="price-current">₹<%= product.sale_price.toLocaleString() %></span>
+                      <span class="price-old">₹<%= product.price.toLocaleString() %></span>
+                    <% } else { %>
+                      <span class="price-current">₹<%= product.price.toLocaleString() %></span>
+                    <% } %>
+                  </div>
+                  <div class="product-actions">
+                    <% if (product.stock > 0) { %>
+                      <a href="/buy/<%= product.id %>" class="btn btn-primary btn-sm btn-glow btn-buy-now" onclick="event.stopPropagation()">Buy Now</a>
+                      <button class="btn btn-outline-light btn-sm btn-add-cart" onclick="event.stopPropagation(); addToCart(<%= product.id %>)">
+                        <i class="fas fa-cart-plus"></i> Add
+                      </button>
+                    <% } else { %>
+                      <span class="out-of-stock-label">Out of Stock</span>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+
+          <% if (totalPages > 1) { %>
+            <div class="pagination">
+              <% if (page > 1) { %>
+                <a href="/shop?page=<%= page - 1 %>&category=<%= category %>&search=<%= search %>&sort=<%= sort %>" class="page-btn"><i class="fas fa-chevron-left"></i></a>
+              <% } %>
+              <% for (let i = 1; i <= totalPages; i++) { %>
+                <a href="/shop?page=<%= i %>&category=<%= category %>&search=<%= search %>&sort=<%= sort %>" class="page-btn <%= page === i ? 'active' : '' %>"><%= i %></a>
+              <% } %>
+              <% if (page < totalPages) { %>
+                <a href="/shop?page=<%= page + 1 %>&category=<%= category %>&search=<%= search %>&sort=<%= sort %>" class="page-btn"><i class="fas fa-chevron-right"></i></a>
+              <% } %>
+            </div>
+          <% } %>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+function toggleMobileFilters() {
+  const bar = document.getElementById('mobileFiltersBar');
+  const btn = document.querySelector('.mobile-filter-toggle');
+  bar.classList.toggle('open');
+  btn.classList.toggle('active');
+}
+</script>
+
+<%- include('partials/footer') %>

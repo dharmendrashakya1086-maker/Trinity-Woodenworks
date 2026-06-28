@@ -1,0 +1,111 @@
+<%- include('admin-header') %>
+
+<div class="page-title">
+  <h1>Dashboard</h1>
+  <p>Welcome back, <%= adminUser ? adminUser.name : 'Admin' %>!</p>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon blue"><i class="fas fa-box"></i></div>
+    <div class="stat-info">
+      <h3><%= stats.totalProducts %></h3>
+      <p>Total Products</p>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon green"><i class="fas fa-shopping-cart"></i></div>
+    <div class="stat-info">
+      <h3><%= stats.totalOrders %></h3>
+      <p>Total Orders</p>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
+    <div class="stat-info">
+      <h3><%= stats.pendingOrders %></h3>
+      <p>Pending Orders</p>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon purple"><i class="fas fa-rupee-sign"></i></div>
+    <div class="stat-info">
+      <h3>₹<%= stats.monthlyRevenue.toLocaleString() %></h3>
+      <p>This Month Revenue</p>
+    </div>
+  </div>
+</div>
+
+<% if (stats.lowStock > 0) { %>
+  <div class="alert alert-warning">
+    <i class="fas fa-exclamation-triangle"></i> <strong><%= stats.lowStock %></strong> product(s) are running low on stock!
+  </div>
+<% } %>
+
+<div class="grid-2">
+  <div class="card">
+    <div class="card-header">
+      <h2><i class="fas fa-clock"></i> Recent Orders</h2>
+      <a href="/admin/orders" class="btn btn-sm btn-outline">View All</a>
+    </div>
+    <div class="card-body">
+      <% if (recentOrders.length === 0) { %>
+        <div class="empty-state-sm"><p>No orders yet</p></div>
+      <% } else { %>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Order #</th>
+              <th>Customer</th>
+              <th>Total</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% recentOrders.forEach(order => { %>
+              <tr>
+                <td><a href="/admin/orders/<%= order.id %>"><%= order.order_number %></a></td>
+                <td><%= order.customer_name %></td>
+                <td>₹<%= order.total.toLocaleString() %></td>
+                <td><span class="badge badge-<%= order.order_status %>"><%= order.order_status %></span></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2><i class="fas fa-exclamation-triangle"></i> Low Stock Alert</h2>
+      <a href="/admin/products" class="btn btn-sm btn-outline">Manage</a>
+    </div>
+    <div class="card-body">
+      <% if (lowStockProducts.length === 0) { %>
+        <div class="empty-state-sm"><p>All products are well stocked!</p></div>
+      <% } else { %>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Stock</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% lowStockProducts.forEach(product => { %>
+              <tr>
+                <td><%= product.name %></td>
+                <td><span class="stock-badge <%= product.stock === 0 ? 'out' : 'low' %>"><%= product.stock %></span></td>
+                <td><a href="/admin/products/edit/<%= product.id %>" class="btn btn-xs btn-primary">Edit</a></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<%- include('admin-footer') %>

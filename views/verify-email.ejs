@@ -1,0 +1,53 @@
+<%- include('partials/header') %>
+
+<section class="page-header">
+  <div class="container">
+    <h1>Verify Your Email</h1>
+    <p>Enter the verification code sent to your email</p>
+    <div class="breadcrumb">
+      <a href="/">Home</a> <i class="fas fa-chevron-right"></i>
+      <a href="/signup">Sign Up</a> <i class="fas fa-chevron-right"></i>
+      <span>Verify Email</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="auth-logo">
+          <div class="logo-circle">
+            <img src="/images/Trinity Woodenworks Logo.png" alt="Trinity Woodenworks">
+          </div>
+        </div>
+        <h2>Check Your Email</h2>
+        <p class="auth-subtitle">We sent a 6-digit code to <strong><%= email %></strong></p>
+
+        <% if (error) { %>
+          <div class="auth-error"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
+        <% } %>
+
+        <div class="verification-code-display">
+          <p class="verification-label">Your verification code:</p>
+          <div class="verification-code"><%= code %></div>
+          <p class="verification-note">This code expires in 10 minutes</p>
+        </div>
+
+        <form action="/verify-email" method="POST" class="auth-form">
+          <div class="form-group">
+            <label><i class="fas fa-key"></i> Enter Verification Code</label>
+            <input type="text" name="code" required placeholder="Enter 6-digit code" maxlength="6" pattern="[0-9]{6}" autocomplete="one-time-code" class="otp-input">
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg btn-block"><i class="fas fa-check-circle"></i> Verify & Complete</button>
+        </form>
+
+        <div class="auth-footer">
+          <a href="/signup/email"><i class="fas fa-arrow-left"></i> Back to Sign Up</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>
