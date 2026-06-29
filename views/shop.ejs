@@ -96,8 +96,8 @@
                   <% } else { %>
                     <div class="product-placeholder"><i class="fas fa-image"></i></div>
                   <% } %>
-                  <% if (product.sale_price) { %>
-                    <span class="product-badge sale">Sale</span>
+                  <% if (product.discount_percent > 0) { %>
+                    <span class="product-badge sale"><%= product.discount_percent %>% OFF</span>
                   <% } %>
                   <% if (product.stock <= 0) { %>
                     <span class="product-badge out-of-stock">Out of Stock</span>
@@ -107,9 +107,9 @@
                   <span class="product-category"><%= product.category_name || 'Uncategorized' %></span>
                   <h3 class="product-name"><%= product.name %></h3>
                   <div class="product-price">
-                    <% if (product.sale_price) { %>
-                      <span class="price-current">₹<%= product.sale_price.toLocaleString() %></span>
-                      <span class="price-old">₹<%= product.price.toLocaleString() %></span>
+                    <% if (product.discount_percent > 0) { %>
+                      <span class="price-current">₹<%= product.price.toLocaleString() %></span>
+                      <span class="price-old">₹<%= (product.mrp || product.price).toLocaleString() %></span>
                     <% } else { %>
                       <span class="price-current">₹<%= product.price.toLocaleString() %></span>
                     <% } %>

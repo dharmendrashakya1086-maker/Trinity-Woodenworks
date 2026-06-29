@@ -87,16 +87,22 @@ router.get('/products/add', requireAdmin, (req, res) => {
 
 router.post('/products/add', requireAdmin, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'gallery', maxCount: 10 }]), (req, res) => {
   const db = getDB();
-  const { name, description, price, sale_price, category_id, stock, featured } = req.body;
+  const { name, description, mrp, discount_percent, price, category_id, stock, featured } = req.body;
   const image = req.files && req.files.image ? req.files.image[0].filename : null;
+
+  const mrpVal = parseFloat(mrp) || 0;
+  const discVal = parseFloat(discount_percent) || 0;
+  const salePrice = mrpVal > 0 ? Math.round(mrpVal * (1 - discVal / 100)) : 0;
 
   const maxId = db.get('products').map('id').max().value() || 0;
   const product = {
     id: maxId + 1,
     name,
     description,
-    price: parseFloat(price),
-    sale_price: sale_price ? parseFloat(sale_price) : null,
+    mrp: mrpVal,
+    discount_percent: discVal,
+    price: salePrice,
+    sale_price: salePrice,
     category_id: category_id ? parseInt(category_id) : null,
     stock: parseInt(stock) || 0,
     image,
@@ -132,8 +138,12 @@ router.get('/products/edit/:id', requireAdmin, (req, res) => {
 
 router.post('/products/edit/:id', requireAdmin, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'gallery', maxCount: 10 }]), (req, res) => {
   const db = getDB();
-  const { name, description, price, sale_price, category_id, stock, featured, status, remove_image } = req.body;
+  const { name, description, mrp, discount_percent, price, category_id, stock, featured, status, remove_image } = req.body;
   let image = req.body.existing_image;
+
+  const mrpVal = parseFloat(mrp) || 0;
+  const discVal = parseFloat(discount_percent) || 0;
+  const salePrice = mrpVal > 0 ? Math.round(mrpVal * (1 - discVal / 100)) : 0;
 
   if (remove_image === '1') {
     image = null;
@@ -145,8 +155,10 @@ router.post('/products/edit/:id', requireAdmin, upload.fields([{ name: 'image', 
   db.get('products').find({ id: parseInt(req.params.id) }).assign({
     name,
     description,
-    price: parseFloat(price),
-    sale_price: sale_price ? parseFloat(sale_price) : null,
+    mrp: mrpVal,
+    discount_percent: discVal,
+    price: salePrice,
+    sale_price: salePrice,
     category_id: category_id ? parseInt(category_id) : null,
     stock: parseInt(stock) || 0,
     image,

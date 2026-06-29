@@ -44,7 +44,7 @@
             </div>
             <div class="admin-item-details">
               <div class="admin-detail"><span class="admin-detail-label">Category</span><span class="badge badge-info"><%= product.category_name || 'N/A' %></span></div>
-              <div class="admin-detail"><span class="admin-detail-label">Price</span><span><% if (product.sale_price) { %><span class="text-muted text-line">₹<%= product.price.toLocaleString() %></span> <span class="text-bold">₹<%= product.sale_price.toLocaleString() %></span><% } else { %>₹<%= product.price.toLocaleString() %><% } %></span></div>
+              <div class="admin-detail"><span class="admin-detail-label">Price</span><span><% if (product.discount_percent > 0) { %><span class="text-muted text-line">₹<%= (product.mrp || product.price).toLocaleString() %></span> <span class="text-bold">₹<%= product.price.toLocaleString() %></span> <span style="color:var(--danger);font-size:0.75rem;font-weight:700;"><%= product.discount_percent %>% OFF</span><% } else { %>₹<%= product.price.toLocaleString() %><% } %></span></div>
               <div class="admin-detail"><span class="admin-detail-label">Stock</span><span class="stock-badge <%= product.stock === 0 ? 'out' : (product.stock <= 5 ? 'low' : '') %>"><%= product.stock %></span></div>
               <div class="admin-detail"><span class="admin-detail-label">Status</span><span class="badge badge-<%= product.status %>"><%= product.status %></span></div>
             </div>

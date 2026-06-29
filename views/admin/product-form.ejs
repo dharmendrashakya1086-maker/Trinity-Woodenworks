@@ -32,16 +32,27 @@
 
       <div class="grid-3">
         <div class="form-group">
-          <label>Price (₹) *</label>
-          <input type="number" name="price" value="<%= product ? product.price : '' %>" required min="0" step="0.01" placeholder="e.g., 999">
+          <label>MRP (₹) *</label>
+          <input type="number" name="mrp" id="inputMrp" value="<%= product ? (product.mrp || product.price) : '' %>" required min="0" step="0.01" placeholder="e.g., 1999" oninput="calcSalePrice()">
         </div>
         <div class="form-group">
-          <label>Sale Price (₹)</label>
-          <input type="number" name="sale_price" value="<%= product && product.sale_price ? product.sale_price : '' %>" min="0" step="0.01" placeholder="Leave blank if no sale">
+          <label>Discount (%) *</label>
+          <input type="number" name="discount_percent" id="inputDiscount" value="<%= product ? (product.discount_percent || 0) : 0 %>" required min="0" max="90" step="1" placeholder="e.g., 20" oninput="calcSalePrice()">
         </div>
+        <div class="form-group">
+          <label>Sale Price (₹) — Auto calculated</label>
+          <input type="number" id="inputSalePrice" readonly placeholder="Auto calculated" style="background:var(--dark-4);color:var(--primary);font-weight:700;cursor:not-allowed;">
+          <input type="hidden" name="price" id="hiddenSalePrice">
+        </div>
+      </div>
+
+      <div class="grid-2">
         <div class="form-group">
           <label>Stock Quantity *</label>
           <input type="number" name="stock" value="<%= product ? product.stock : 0 %>" required min="0" placeholder="e.g., 50">
+        </div>
+        <div class="form-group" style="display:flex;align-items:end;">
+          <div id="discountBadgePreview" style="display:none;background:var(--danger);color:#fff;padding:6px 14px;border-radius:6px;font-weight:700;font-size:0.85rem;"></div>
         </div>
       </div>
 
@@ -92,5 +103,24 @@
     </form>
   </div>
 </div>
+
+<script>
+function calcSalePrice() {
+  const mrp = parseFloat(document.getElementById('inputMrp').value) || 0;
+  const disc = parseFloat(document.getElementById('inputDiscount').value) || 0;
+  const salePrice = mrp > 0 ? Math.round(mrp * (1 - disc / 100)) : 0;
+  document.getElementById('inputSalePrice').value = salePrice > 0 ? salePrice : '';
+  document.getElementById('hiddenSalePrice').value = salePrice > 0 ? salePrice : '';
+
+  const badge = document.getElementById('discountBadgePreview');
+  if (disc > 0 && mrp > 0) {
+    badge.style.display = 'inline-block';
+    badge.textContent = disc + '% OFF — ₹' + salePrice;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+calcSalePrice();
+</script>
 
 <%- include('admin-footer') %>
