@@ -1195,7 +1195,22 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); }
   .form-group input, .form-group select, .form-group textarea { padding: 10px 12px; font-size: 0.85rem; }
   .form-actions { flex-direction: column; gap: 10px; }
   .form-actions .btn { width: 100%; justify-content: center; }
-  .modal-content { width: 95%; padding: 16px; }
+
+  /* Modal mobile fixes */
+  .modal { z-index: 9999; align-items: flex-end; padding: 0; }
+  .modal-content {
+    width: 100%;
+    max-width: 100%;
+    max-height: 92vh;
+    border-radius: 16px 16px 0 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+  }
+  .modal-content form { padding: 20px 16px 24px; }
+  .modal-header { padding: 16px; }
+  .modal-close { font-size: 1.8rem; padding: 4px; }
+  .modal .form-actions { position: sticky; bottom: 0; background: var(--bg-card); padding: 12px 0 0; margin-top: 8px; z-index: 1; }
 }
 
 /* ================================================================
