@@ -101,4 +101,40 @@
   </div>
 </div>
 
+<div class="card">
+  <div class="card-header">
+    <h2><i class="fas fa-envelope"></i> Send Message to Customer</h2>
+  </div>
+  <div class="card-body">
+    <form action="/admin/orders/<%= order.id %>/message" method="POST" class="admin-form">
+      <div class="form-group">
+        <label>Subject *</label>
+        <input type="text" name="subject" required placeholder="e.g., Update about your order" value="Update about order #<%= order.order_number %>">
+      </div>
+      <div class="form-group">
+        <label>Message *</label>
+        <textarea name="message" rows="5" required placeholder="Write your message to the customer..."></textarea>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Send Message</button>
+        <small style="color:var(--text-muted)"><i class="fas fa-info-circle"></i> Message will be sent to <%= order.customer_email %> and shown in their account</small>
+      </div>
+    </form>
+    <% if (typeof sentMessages !== 'undefined' && sentMessages.length > 0) { %>
+      <div style="margin-top:24px;">
+        <h3 style="font-size:0.95rem;color:var(--text-light);margin-bottom:12px;"><i class="fas fa-history"></i> Sent Messages</h3>
+        <% sentMessages.forEach(msg => { %>
+          <div style="background:var(--dark-3);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <strong style="font-size:0.85rem;color:#fff;"><%= msg.subject %></strong>
+              <small style="color:var(--text-muted);"><%= new Date(msg.created_at).toLocaleString('en-IN') %></small>
+            </div>
+            <p style="font-size:0.82rem;color:var(--text-light);margin:0;white-space:pre-wrap;"><%= msg.message %></p>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</div>
+
 <%- include('admin-footer') %>

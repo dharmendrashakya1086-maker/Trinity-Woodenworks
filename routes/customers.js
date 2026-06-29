@@ -263,7 +263,19 @@ router.post('/login', (req, res) => {
 // ==================== ACCOUNT ====================
 router.get('/account', requireCustomer, (req, res) => {
   const customer = findById('customers', req.session.customer.id);
-  res.render('account', { title: 'My Account', customer, success: null, error: null });
+  const db = getDB();
+  const messages = db.get('messages')
+    .filter({ customer_id: customer.id })
+    .sortBy('created_at')
+    .reverse()
+    .value();
+  // Mark messages as read
+  messages.forEach(msg => {
+    if (!msg.read) {
+      db.get('messages').find({ id: msg.id }).assign({ read: true }).write();
+    }
+  });
+  res.render('account', { title: 'My Account', customer, messages, success: null, error: null });
 });
 
 router.post('/account', requireCustomer, (req, res) => {

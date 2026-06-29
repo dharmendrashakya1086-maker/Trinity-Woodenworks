@@ -5,6 +5,7 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const { getDB, insertOne, updateOne, removeOne, findAll, findById } = require('../database');
+const { sendOrderMessageEmail } = require('../services/email');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, path.join(__dirname, '..', 'uploads')),
@@ -272,7 +273,8 @@ router.get('/orders/:id', requireAdmin, (req, res) => {
   const order = db.get('orders').find({ id: parseInt(req.params.id) }).value();
   if (!order) return res.redirect('/admin/orders');
   const items = db.get('order_items').filter({ order_id: order.id }).value();
-  res.render('admin/order-detail', { order, items });
+  const sentMessages = db.get('messages').filter({ order_id: order.id }).sortBy('created_at').reverse().value();
+  res.render('admin/order-detail', { order, items, sentMessages });
 });
 
 router.post('/orders/:id/status', requireAdmin, (req, res) => {
@@ -283,6 +285,32 @@ router.post('/orders/:id/status', requireAdmin, (req, res) => {
     payment_status,
     updated_at: new Date().toISOString()
   }).write();
+  res.redirect('/admin/orders/' + req.params.id);
+});
+
+router.post('/orders/:id/message', requireAdmin, async (req, res) => {
+  const db = getDB();
+  const { subject, message } = req.body;
+  const order = db.get('orders').find({ id: parseInt(req.params.id) }).value();
+  if (!order) return res.redirect('/admin/orders');
+
+  insertOne('messages', {
+    order_id: order.id,
+    order_number: order.order_number,
+    customer_id: order.customer_id || null,
+    customer_email: order.customer_email,
+    customer_name: order.customer_name,
+    subject: subject.trim(),
+    message: message.trim(),
+    read: false
+  });
+
+  try {
+    await sendOrderMessageEmail(order.customer_email, order.customer_name, subject.trim(), message.trim(), order.order_number);
+  } catch (err) {
+    console.error('Failed to send message email:', err);
+  }
+
   res.redirect('/admin/orders/' + req.params.id);
 });
 

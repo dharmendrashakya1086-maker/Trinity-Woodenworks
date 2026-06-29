@@ -29,7 +29,8 @@ function getDB() {
       product_images: [],
       orders: [],
       order_items: [],
-      site_settings: []
+      site_settings: [],
+      messages: []
     }).write();
   }
   return database;
