@@ -162,13 +162,32 @@ router.get('/contact', (req, res) => {
 });
 
 router.get('/track-order', (req, res) => {
-  res.render('track-order', { order: null });
+  const db = getDB();
+  let myOrders = [];
+  if (req.session.customer) {
+    myOrders = db.get('orders')
+      .filter(o => o.customer_id === req.session.customer.id || o.customer_email === req.session.customer.email)
+      .sortBy('created_at')
+      .reverse()
+      .take(10)
+      .value();
+  }
+  res.render('track-order', { order: null, myOrders, searched: false });
 });
 
 router.post('/track-order', (req, res) => {
   const db = getDB();
   const order = db.get('orders').find({ order_number: req.body.order_number }).value();
-  res.render('track-order', { order, searched: true });
+  let myOrders = [];
+  if (req.session.customer) {
+    myOrders = db.get('orders')
+      .filter(o => o.customer_id === req.session.customer.id || o.customer_email === req.session.customer.email)
+      .sortBy('created_at')
+      .reverse()
+      .take(10)
+      .value();
+  }
+  res.render('track-order', { order, myOrders, searched: true });
 });
 
 module.exports = router;

@@ -3,19 +3,64 @@
 <section class="page-header">
   <div class="container">
     <h1>Track Your Order</h1>
-    <p>Enter your order number to check status</p>
+    <p><%= customer ? 'Click any order to track its status' : 'Enter your order number to check status' %></p>
   </div>
 </section>
 
 <section class="section">
   <div class="container">
     <div class="track-order-section">
-      <form action="/track-order" method="POST" class="track-form">
-        <div class="track-input-group">
-          <input type="text" name="order_number" placeholder="Enter Order Number (e.g., TW26061234)" value="<%= order ? order.order_number : '' %>" required>
-          <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Track</button>
+
+      <% if (customer && myOrders.length > 0 && !order) { %>
+        <div class="my-orders-list">
+          <h2 class="section-title"><i class="fas fa-box"></i> Your Recent Orders</h2>
+          <% myOrders.forEach(o => { %>
+            <form action="/track-order" method="POST" style="display:inline">
+              <input type="hidden" name="order_number" value="<%= o.order_number %>">
+              <button type="submit" class="order-track-card">
+                <div class="order-track-left">
+                  <div class="order-track-icon">
+                    <% if (o.order_status === 'delivered') { %>
+                      <i class="fas fa-check-circle" style="color:#00e676"></i>
+                    <% } else if (o.order_status === 'cancelled') { %>
+                      <i class="fas fa-times-circle" style="color:#ff1744"></i>
+                    <% } else if (o.order_status === 'shipped') { %>
+                      <i class="fas fa-truck" style="color:#ffab00"></i>
+                    <% } else { %>
+                      <i class="fas fa-clock" style="color:var(--primary)"></i>
+                    <% } %>
+                  </div>
+                  <div class="order-track-info">
+                    <h3><%= o.order_number %></h3>
+                    <p><%= new Date(o.created_at).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'}) %></p>
+                  </div>
+                </div>
+                <div class="order-track-right">
+                  <span class="badge badge-<%= o.order_status %>"><%= o.order_status %></span>
+                  <span class="order-track-total">₹<%= o.total.toLocaleString() %></span>
+                  <i class="fas fa-chevron-right"></i>
+                </div>
+              </button>
+            </form>
+          <% }) %>
         </div>
-      </form>
+      <% } %>
+
+      <% if (!customer) { %>
+        <form action="/track-order" method="POST" class="track-form">
+          <div class="track-input-group">
+            <input type="text" name="order_number" placeholder="Enter Order Number (e.g., TW26061234)" value="<%= order ? order.order_number : '' %>" required>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Track</button>
+          </div>
+        </form>
+      <% } else if (myOrders.length === 0 || order) { %>
+        <form action="/track-order" method="POST" class="track-form">
+          <div class="track-input-group">
+            <input type="text" name="order_number" placeholder="Or enter order number manually" value="<%= order ? order.order_number : '' %>">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Track</button>
+          </div>
+        </form>
+      <% } %>
 
       <% if (order) { %>
         <div class="order-tracking-result">
@@ -80,11 +125,78 @@
         <div class="empty-state">
           <i class="fas fa-exclamation-triangle"></i>
           <h3>Order Not Found</h3>
-          <p>Please check your order number and try again. Order numbers start with "TW" followed by date and 4 digits (e.g., TW26061234).</p>
+          <p>Please check your order number and try again.</p>
         </div>
       <% } %>
     </div>
   </div>
 </section>
+
+<style>
+.my-orders-list { margin-bottom: 30px; }
+.my-orders-list .section-title {
+  font-size: 1.1rem;
+  color: var(--text);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.order-track-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px 18px;
+  margin-bottom: 8px;
+  background: var(--dark-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: left;
+  color: var(--text);
+  font-family: var(--font-body);
+}
+.order-track-card:hover {
+  border-color: var(--primary);
+  background: rgba(201,169,110,0.05);
+  transform: translateX(4px);
+}
+.order-track-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.order-track-icon { font-size: 1.4rem; }
+.order-track-info h3 {
+  font-size: 0.95rem;
+  color: #fff;
+  margin: 0;
+}
+.order-track-info p {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin: 2px 0 0;
+}
+.order-track-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.order-track-total {
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 0.95rem;
+}
+.order-track-right .fa-chevron-right {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+@media (max-width: 768px) {
+  .order-track-card { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .order-track-right { width: 100%; justify-content: space-between; }
+}
+</style>
 
 <%- include('partials/footer') %>
