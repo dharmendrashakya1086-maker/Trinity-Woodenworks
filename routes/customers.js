@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-const { insertOne, findByKey, findById, updateOne, findAll } = require('../database');
+const { insertOne, findByKey, findById, updateOne, findAll, getDB } = require('../database');
 const { sendVerificationEmail } = require('../services/email');
 
 const LOCKOUT_ATTEMPTS = 5;
@@ -304,8 +304,14 @@ router.post('/account', requireCustomer, (req, res) => {
 // ==================== ORDERS ====================
 router.get('/orders', requireCustomer, (req, res) => {
   const customer = findById('customers', req.session.customer.id);
-  const orders = findAll('orders', { customer_id: req.session.customer.id }, { created_at: 'desc' });
-  res.render('order-history', { title: 'My Orders', orders: orders.data, customer });
+  const db = getDB();
+  // Match by customer_id OR by email (fallback for older orders)
+  const orders = db.get('orders')
+    .filter(o => o.customer_id === req.session.customer.id || o.customer_email === customer.email)
+    .sortBy('created_at')
+    .reverse()
+    .value();
+  res.render('order-history', { title: 'My Orders', orders, customer });
 });
 
 // ==================== LOGOUT ====================

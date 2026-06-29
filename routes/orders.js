@@ -33,6 +33,7 @@ router.post('/place', (req, res) => {
     const order = {
       id: maxOrderId + 1,
       order_number: orderNumber,
+      customer_id: req.session.customer ? req.session.customer.id : null,
       customer_name: name,
       customer_email: email,
       customer_phone: phone,
