@@ -90,6 +90,26 @@ function initDB() {
     ];
     database.get('site_settings').push(...settings).write();
   }
+
+  // Create default products if empty
+  const prodCount = database.get('products').size().value();
+  if (prodCount === 0) {
+    const products = [
+      { id: 1, name: 'Wooden Flower Vase', category_id: 1, description: 'Hand-carved wooden vase with intricate floral patterns. Perfect for home decor.', price: 1299, mrp: 1599, discount_percent: 19, sale_price: 1299, stock: 25, image: null, status: 'active', featured: 1 },
+      { id: 2, name: 'Carved Wooden Wall Panel', category_id: 1, description: 'Elegant wall panel with traditional Indian motifs. Adds warmth to any room.', price: 2499, mrp: 2999, discount_percent: 17, sale_price: 2499, stock: 15, image: null, status: 'active', featured: 1 },
+      { id: 3, name: 'Wooden Chess Board', category_id: 1, description: 'Premium handcrafted chess board with carved wooden pieces.', price: 1899, mrp: 2299, discount_percent: 17, sale_price: 1899, stock: 20, image: null, status: 'active', featured: 0 },
+      { id: 4, name: 'Rustic Wooden Bookshelf', category_id: 2, description: '5-tier open bookshelf made from solid Sheesham wood. Rustic finish.', price: 8999, mrp: 11999, discount_percent: 25, sale_price: 8999, stock: 8, image: null, status: 'active', featured: 1 },
+      { id: 5, name: 'Wooden Coffee Table', category_id: 2, description: 'Live-edge wooden coffee table with sturdy legs. Natural grain pattern.', price: 6499, mrp: 7999, discount_percent: 19, sale_price: 6499, stock: 10, image: null, status: 'active', featured: 1 },
+      { id: 6, name: 'Wooden Dining Set (4 Seater)', category_id: 2, description: 'Complete dining set with table and 4 chairs. Solid wood construction.', price: 15999, mrp: 19999, discount_percent: 20, sale_price: 15999, stock: 5, image: null, status: 'active', featured: 0 },
+      { id: 7, name: 'Wooden Cutting Board', category_id: 3, description: 'Thick wooden cutting board from organic teak. Food-safe finish.', price: 599, mrp: 799, discount_percent: 25, sale_price: 599, stock: 50, image: null, status: 'active', featured: 1 },
+      { id: 8, name: 'Wooden Spice Box (Masala Dabba)', category_id: 3, description: 'Traditional wooden spice box with 7 compartments. Aromatic Sheesham wood.', price: 899, mrp: 1199, discount_percent: 25, sale_price: 899, stock: 30, image: null, status: 'active', featured: 0 },
+      { id: 9, name: 'Personalized Wooden Nameplate', category_id: 5, description: 'Custom carved wooden nameplate for your home. Send us your name in Hindi or English.', price: 1499, mrp: 1999, discount_percent: 25, sale_price: 1499, stock: 99, image: null, status: 'active', featured: 1 },
+      { id: 10, name: 'Wooden Photo Frame Set', category_id: 4, description: 'Set of 3 handcrafted wooden photo frames in different sizes. Perfect gift.', price: 999, mrp: 1299, discount_percent: 23, sale_price: 999, stock: 40, image: null, status: 'active', featured: 1 },
+      { id: 11, name: 'Wooden Pen Stand', category_id: 4, description: 'Handcrafted wooden pen stand with carved design. Great desk accessory.', price: 449, mrp: 599, discount_percent: 25, sale_price: 449, stock: 60, image: null, status: 'active', featured: 0 },
+      { id: 12, name: 'Carved Wooden Elephant', category_id: 1, description: 'Hand-carved wooden elephant statue. Traditional Rajasthani craftsmanship.', price: 1799, mrp: 2199, discount_percent: 18, sale_price: 1799, stock: 12, image: null, status: 'active', featured: 0 }
+    ];
+    database.get('products').push(...products).write();
+  }
 }
 
 // Helper functions to mimic SQL-like queries

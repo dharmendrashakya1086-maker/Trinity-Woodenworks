@@ -1,0 +1,163 @@
+{
+  "admin": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "$2a$10$vxQIGhbFj5KnaxqlE8lAOuvpfoqscRQ3CZgXq5WTzS83y8fFt4Cw.",
+      "name": "Trinity Admin",
+      "created_at": "2026-06-26T18:13:14.429Z"
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "Wooden Decor",
+      "description": "Beautiful handcrafted wooden decorative items for your home",
+      "image": null,
+      "icon": "fa-snowflake",
+      "featured": 1,
+      "created_at": "2026-06-26T18:13:14.432Z"
+    },
+    {
+      "id": 2,
+      "name": "Furniture",
+      "description": "Premium handcrafted wooden furniture pieces",
+      "image": null,
+      "icon": "fa-couch",
+      "featured": 1,
+      "created_at": "2026-06-26T18:13:14.432Z"
+    },
+    {
+      "id": 3,
+      "name": "Kitchen & Dining",
+      "description": "Wooden kitchen accessories and dining items",
+      "image": null,
+      "icon": "fa-utensils",
+      "featured": 0,
+      "created_at": "2026-06-26T18:13:14.432Z"
+    },
+    {
+      "id": 4,
+      "name": "Gifting",
+      "description": "Perfect wooden gift items for your loved ones",
+      "image": null,
+      "icon": "fa-gift",
+      "featured": 1,
+      "created_at": "2026-06-26T18:13:14.432Z"
+    },
+    {
+      "id": 5,
+      "name": "Custom Orders",
+      "description": "Customized wooden items made to your specifications",
+      "image": null,
+      "icon": "fa-pencil-ruler",
+      "featured": 0,
+      "created_at": "2026-06-26T18:13:14.432Z"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "Handcrafted Wooden Vase",
+      "description": "Beautiful handmade wooden vase",
+      "price": 1499,
+      "sale_price": 1299,
+      "category_id": 1,
+      "stock": 25,
+      "image": null,
+      "featured": 1,
+      "status": "active",
+      "created_at": "2026-06-26T18:17:42.123Z",
+      "updated_at": "2026-06-26T18:17:42.123Z"
+    },
+    {
+      "id": 2,
+      "name": "Rustic Wooden Box",
+      "description": "Storage box made from reclaimed wood",
+      "price": 899,
+      "sale_price": null,
+      "category_id": 4,
+      "stock": 40,
+      "image": null,
+      "featured": 1,
+      "status": "active",
+      "created_at": "2026-06-26T18:17:42.284Z",
+      "updated_at": "2026-06-26T18:17:42.284Z"
+    },
+    {
+      "id": 3,
+      "name": "Wooden Cutting Board",
+      "description": "Premium quality wooden cutting board",
+      "price": 699,
+      "sale_price": 599,
+      "category_id": 3,
+      "stock": 50,
+      "image": null,
+      "featured": 0,
+      "status": "active",
+      "created_at": "2026-06-26T18:17:42.333Z",
+      "updated_at": "2026-06-26T18:17:42.333Z"
+    },
+    {
+      "id": 4,
+      "name": "Decorative Wooden Clock",
+      "description": "Wall clock made from solid wood",
+      "price": 1999,
+      "sale_price": null,
+      "category_id": 1,
+      "stock": 15,
+      "image": null,
+      "featured": 1,
+      "status": "active",
+      "created_at": "2026-06-26T18:17:42.380Z",
+      "updated_at": "2026-06-26T18:17:42.380Z"
+    },
+    {
+      "id": 5,
+      "name": "Wooden Bookshelf",
+      "description": "Handmade 4-tier bookshelf",
+      "price": 4999,
+      "sale_price": null,
+      "category_id": 2,
+      "stock": 8,
+      "image": null,
+      "featured": 1,
+      "status": "active",
+      "created_at": "2026-06-26T18:17:42.428Z",
+      "updated_at": "2026-06-26T18:17:42.428Z"
+    }
+  ],
+  "product_images": [],
+  "orders": [],
+  "order_items": [],
+  "site_settings": [
+    {
+      "key": "site_name",
+      "value": "Trinity Woodenworks"
+    },
+    {
+      "key": "tagline",
+      "value": "Crafted with Passion, Built to Last"
+    },
+    {
+      "key": "phone",
+      "value": "+91 98765 43210"
+    },
+    {
+      "key": "email",
+      "value": "info@trinitywoodenworks.com"
+    },
+    {
+      "key": "address",
+      "value": "Jaipur, Rajasthan, India"
+    },
+    {
+      "key": "shipping_cost",
+      "value": "0"
+    },
+    {
+      "key": "free_shipping_above",
+      "value": "1000"
+    }
+  ]
+}
