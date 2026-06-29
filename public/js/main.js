@@ -3,6 +3,7 @@
 // ================================================================
 
 function addToCart(productId, quantity = 1) {
+  if (!isLoggedIn) { showAuthModal(); return; }
   const btn = event.currentTarget;
   createRipple(btn, event);
 
@@ -13,8 +14,7 @@ function addToCart(productId, quantity = 1) {
   })
   .then(res => {
     if (res.status === 401) {
-      showToast('Please login to continue', 'error');
-      setTimeout(() => window.location.href = '/login', 1000);
+      showAuthModal();
       return null;
     }
     return res.json();

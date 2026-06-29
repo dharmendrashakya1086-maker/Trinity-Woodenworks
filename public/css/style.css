@@ -4336,6 +4336,86 @@ img { max-width: 100%; height: auto; }
 
 .auth-footer a:hover { color: var(--gold); }
 
+/* ---- Auth Modal Popup ---- */
+.auth-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+.auth-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+.auth-modal {
+  background: var(--dark-2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 36px 32px;
+  width: 90%;
+  max-width: 380px;
+  text-align: center;
+  position: relative;
+  transform: scale(0.9) translateY(20px);
+  transition: all 0.3s ease;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(201,169,110,0.08);
+}
+.auth-modal-overlay.active .auth-modal {
+  transform: scale(1) translateY(0);
+}
+.auth-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+  line-height: 1;
+}
+.auth-modal-close:hover { color: var(--danger); transform: rotate(90deg); }
+.auth-modal-logo { margin-bottom: 16px; }
+.auth-modal-logo .logo-circle {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto;
+}
+.auth-modal-logo img { width: 100%; height: 100%; object-fit: contain; }
+.auth-modal h2 {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  color: #fff;
+  margin: 0 0 6px;
+}
+.auth-modal-subtitle {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  margin-bottom: 24px;
+}
+.auth-modal-actions { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+.auth-modal-actions .btn-block { width: 100%; text-align: center; }
+.auth-modal-note {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+@media (max-width: 480px) {
+  .auth-modal { padding: 28px 20px; }
+  .auth-modal h2 { font-size: 1.2rem; }
+}
+
 /* ---- Account Layout ---- */
 .account-layout {
   display: grid;

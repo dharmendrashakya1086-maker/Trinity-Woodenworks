@@ -99,3 +99,52 @@
     document.body.style.overflow = '';
   }
   </script>
+
+  <% if (!customer) { %>
+  <!-- Auth Required Modal -->
+  <div class="auth-modal-overlay" id="authModal" onclick="closeAuthModal(event)">
+    <div class="auth-modal" onclick="event.stopPropagation()">
+      <button class="auth-modal-close" onclick="document.getElementById('authModal').classList.remove('active')">&times;</button>
+      <div class="auth-modal-logo">
+        <div class="logo-circle">
+          <img src="/images/Trinity Woodenworks Logo.png" alt="Trinity Woodenworks">
+        </div>
+      </div>
+      <h2>Welcome!</h2>
+      <p class="auth-modal-subtitle">Login or Sign up to continue shopping</p>
+      <div class="auth-modal-actions">
+        <a href="/login" class="btn btn-primary btn-lg btn-block btn-glow">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </a>
+        <a href="/signup" class="btn btn-outline-light btn-lg btn-block">
+          <i class="fas fa-user-plus"></i> Sign Up
+        </a>
+      </div>
+      <p class="auth-modal-note"><i class="fas fa-lock"></i> Secure checkout &middot; Track orders &middot; Save address</p>
+    </div>
+  </div>
+  <script>
+  const isLoggedIn = false;
+  function closeAuthModal(e) {
+    if (e.target === e.currentTarget) {
+      document.getElementById('authModal').classList.remove('active');
+    }
+  }
+  function showAuthModal() {
+    document.getElementById('authModal').classList.add('active');
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[data-auth-required="true"]').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        if (!isLoggedIn) {
+          e.preventDefault();
+          e.stopPropagation();
+          showAuthModal();
+        }
+      });
+    });
+  });
+  </script>
+  <% } else { %>
+  <script>const isLoggedIn = true;</script>
+  <% } %>
