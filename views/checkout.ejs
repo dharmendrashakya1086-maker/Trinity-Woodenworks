@@ -356,10 +356,11 @@ function useMyLocation() {
     async function(position) {
       const lat = position.coords.latitude;
       const lon = position.coords.longitude;
+      const accuracy = position.coords.accuracy;
 
       try {
-        // Use OpenStreetMap Nominatim API (free, no key needed)
-        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`, {
+        // Use OpenStreetMap Nominatim API with high precision params
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1&extratags=1&namedetails=1`, {
           headers: { 'Accept-Language': 'en' }
         });
         const data = await res.json();
@@ -421,7 +422,7 @@ function useMyLocation() {
       btn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Use My Location';
       btn.disabled = false;
     },
-    { enableHighAccuracy: true, timeout: 15000, maximumAge: 300000 }
+    { enableHighAccuracy: true, timeout: 30000, maximumAge: 0 }
   );
 }
 

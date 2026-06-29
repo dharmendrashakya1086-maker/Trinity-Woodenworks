@@ -48,7 +48,12 @@
             <input type="password" name="confirm_password" required placeholder="Re-enter password" minlength="6">
           </div>
 
-          <h3 class="form-section-title"><i class="fas fa-map-marker-alt"></i> Delivery Address</h3>
+          <h3 class="form-section-title"><i class="fas fa-map-marker-alt"></i> Delivery Address
+            <button type="button" class="btn btn-location btn-sm" id="useLocationBtn" onclick="useMyLocation()">
+              <i class="fas fa-map-marker-alt"></i> Use My Location
+            </button>
+          </h3>
+          <div id="locationStatus" class="location-status"></div>
 
           <div class="form-group">
             <label>Street Address / Landmark</label>
@@ -118,5 +123,82 @@
     </div>
   </div>
 </section>
+
+<script>
+function useMyLocation() {
+  const btn = document.getElementById('useLocationBtn');
+  const status = document.getElementById('locationStatus');
+
+  if (!navigator.geolocation) {
+    status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Geolocation not supported';
+    status.className = 'location-status error';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Detecting...';
+  status.innerHTML = '<i class="fas fa-info-circle"></i> Please allow location access';
+  status.className = 'location-status loading';
+
+  navigator.geolocation.getCurrentPosition(
+    async function(position) {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1&extratags=1`, {
+          headers: { 'Accept-Language': 'en' }
+        });
+        const data = await res.json();
+        const addr = data.address || {};
+
+        const parts = [];
+        if (addr.house_number) parts.push(addr.house_number);
+        if (addr.road) parts.push(addr.road);
+        if (addr.suburb || addr.neighbourhood) parts.push(addr.suburb || addr.neighbourhood);
+        if (addr.city_district) parts.push(addr.city_district);
+        document.querySelector('input[name="address"]').value = parts.join(', ') || data.display_name || '';
+
+        const city = addr.city || addr.town || addr.village || addr.county || '';
+        if (city) document.querySelector('input[name="city"]').value = city;
+
+        const stateName = addr.state || '';
+        const stateSelect = document.querySelector('select[name="state"]');
+        if (stateSelect) {
+          for (let i = 0; i < stateSelect.options.length; i++) {
+            if (stateSelect.options[i].value.toLowerCase() === stateName.toLowerCase()) {
+              stateSelect.selectedIndex = i;
+              break;
+            }
+          }
+        }
+
+        if (addr.postcode) {
+          document.querySelector('input[name="pincode"]').value = addr.postcode.replace(/[^0-9]/g, '').substring(0, 6);
+        }
+
+        status.innerHTML = '<i class="fas fa-check-circle"></i> Location detected!';
+        status.className = 'location-status success';
+      } catch (err) {
+        status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Could not fetch address';
+        status.className = 'location-status error';
+      }
+      btn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Use My Location';
+      btn.disabled = false;
+    },
+    function(error) {
+      let msg = 'Location access denied';
+      if (error.code === 1) msg = 'Location permission denied. Please allow in browser settings.';
+      else if (error.code === 2) msg = 'Location unavailable';
+      else if (error.code === 3) msg = 'Location request timed out';
+      status.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + msg;
+      status.className = 'location-status error';
+      btn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Use My Location';
+      btn.disabled = false;
+    },
+    { enableHighAccuracy: true, timeout: 30000, maximumAge: 0 }
+  );
+}
+</script>
 
 

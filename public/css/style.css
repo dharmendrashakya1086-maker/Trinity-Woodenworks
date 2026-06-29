@@ -2551,6 +2551,22 @@ img { max-width: 100%; height: auto; }
 }
 
 /* ---- LOCATION BUTTON ---- */
+.form-section-title .btn-location {
+  width: auto;
+  margin: 0 0 0 auto;
+  padding: 6px 14px;
+  font-size: 0.75rem;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.form-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .btn-location {
   width: 100%;
   padding: 14px 24px;
