@@ -21,6 +21,11 @@
       <% if (order.notes) { %>
         <div class="detail-row"><span>Notes:</span><strong><%= order.notes %></strong></div>
       <% } %>
+      <% if (order.cancel_reason) { %>
+        <div class="detail-row" style="background:rgba(255,23,68,0.06);margin:8px -24px;padding:12px 24px;border-left:3px solid var(--danger);">
+          <span style="color:var(--danger);font-weight:600;">Cancel Reason:</span><strong style="color:var(--danger);"><%= order.cancel_reason %></strong>
+        </div>
+      <% } %>
     </div>
   </div>
 

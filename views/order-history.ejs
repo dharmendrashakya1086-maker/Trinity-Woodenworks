@@ -50,7 +50,7 @@
                         <span class="order-id">#<%= order.order_number %></span>
                         <span class="order-date"><%= new Date(order.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></span>
                       </div>
-                      <span class="badge badge-<%= order.status %>"><%= order.status %></span>
+                      <span class="badge badge-<%= order.order_status %>"><%= order.order_status %></span>
                     </div>
                     <div class="order-card-body">
                       <div class="order-info-row">
@@ -59,15 +59,20 @@
                       </div>
                       <div class="order-info-row">
                         <span class="order-label">Payment:</span>
-                        <span class="order-value"><%= order.payment_method %></span>
+                        <span class="order-value"><%= order.payment_method === 'cod' ? 'Cash on Delivery' : 'Online' %></span>
                       </div>
-                      <div class="order-info-row">
-                        <span class="order-label">Items:</span>
-                        <span class="order-value"><%= order.total_items || 0 %> item(s)</span>
-                      </div>
+                      <% if (order.cancel_reason) { %>
+                        <div class="order-info-row cancel-reason-row">
+                          <span class="order-label">Cancel Reason:</span>
+                          <span class="order-value cancel-reason-text"><%= order.cancel_reason %></span>
+                        </div>
+                      <% } %>
                     </div>
                     <div class="order-card-footer">
-                      <a href="/track-order?order=<%= order.order_number %>" class="btn btn-outline-light btn-sm"><i class="fas fa-truck"></i> Track</a>
+                      <a href="/track-order" class="btn btn-outline-light btn-sm"><i class="fas fa-truck"></i> Track</a>
+                      <% if (['pending', 'confirmed'].includes(order.order_status)) { %>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="showCancelModal(<%= order.id %>, '<%= order.order_number %>')"><i class="fas fa-times-circle"></i> Cancel</button>
+                      <% } %>
                     </div>
                   </div>
                 <% }) %>
@@ -79,5 +84,272 @@
     </div>
   </div>
 </section>
+
+<!-- Cancel Order Modal -->
+<div class="cancel-modal-overlay" id="cancelModal" onclick="closeCancelModal(event)">
+  <div class="cancel-modal" onclick="event.stopPropagation()">
+    <button class="cancel-modal-close" onclick="document.getElementById('cancelModal').classList.remove('active')">&times;</button>
+    <h2><i class="fas fa-times-circle"></i> Cancel Order</h2>
+    <p class="cancel-modal-subtitle">Order #<span id="cancelOrderNumber"></span></p>
+
+    <form id="cancelForm" onsubmit="return validateCancelForm(event)">
+      <input type="hidden" name="order_id" id="cancelOrderId">
+
+      <div class="cancel-reasons">
+        <label class="cancel-reason-option">
+          <input type="radio" name="reason" value="Changed my mind" onchange="toggleOtherReason(false)">
+          <span class="cancel-reason-label"><i class="fas fa-brain"></i> Changed my mind</span>
+        </label>
+        <label class="cancel-reason-option">
+          <input type="radio" name="reason" value="Found a better price elsewhere" onchange="toggleOtherReason(false)">
+          <span class="cancel-reason-label"><i class="fas fa-tags"></i> Found a better price elsewhere</span>
+        </label>
+        <label class="cancel-reason-option">
+          <input type="radio" name="reason" value="Ordered by mistake" onchange="toggleOtherReason(false)">
+          <span class="cancel-reason-label"><i class="fas fa-exclamation-triangle"></i> Ordered by mistake</span>
+        </label>
+        <label class="cancel-reason-option">
+          <input type="radio" name="reason" value="Need has changed" onchange="toggleOtherReason(false)">
+          <span class="cancel-reason-label"><i class="fas fa-exchange-alt"></i> Need has changed</span>
+        </label>
+        <label class="cancel-reason-option">
+          <input type="radio" name="reason" value="Delivery taking too long" onchange="toggleOtherReason(false)">
+          <span class="cancel-reason-label"><i class="fas fa-clock"></i> Delivery taking too long</span>
+        </label>
+        <label class="cancel-reason-option">
+          <input type="radio" name="reason" value="Other" onchange="toggleOtherReason(true)">
+          <span class="cancel-reason-label"><i class="fas fa-pen"></i> Other Reason</span>
+        </label>
+      </div>
+
+      <div class="other-reason-group" id="otherReasonGroup" style="display:none;">
+        <label>Type your reason (10-50 words)</label>
+        <textarea id="otherReasonText" rows="3" placeholder="Please describe why you want to cancel..." oninput="updateWordCount()"></textarea>
+        <div class="word-count" id="wordCount">0 / 50 words</div>
+      </div>
+
+      <div class="cancel-modal-actions">
+        <button type="button" class="btn btn-outline-light" onclick="document.getElementById('cancelModal').classList.remove('active')">Keep Order</button>
+        <button type="submit" class="btn btn-danger"><i class="fas fa-times-circle"></i> Confirm Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+.cancel-reason-row { flex-direction: column; gap: 2px; }
+.cancel-reason-text { color: var(--danger); font-size: 0.82rem; }
+
+.cancel-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+.cancel-modal-overlay.active { opacity: 1; visibility: visible; }
+
+.cancel-modal {
+  background: var(--dark-2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px;
+  width: 92%;
+  max-width: 440px;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  transform: scale(0.9) translateY(20px);
+  transition: all 0.3s ease;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.cancel-modal-overlay.active .cancel-modal { transform: scale(1) translateY(0); }
+
+.cancel-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.cancel-modal-close:hover { color: var(--danger); transform: rotate(90deg); }
+
+.cancel-modal h2 {
+  font-size: 1.2rem;
+  color: var(--danger);
+  margin: 0 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cancel-modal-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0 0 20px;
+}
+
+.cancel-reasons { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.cancel-reason-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--dark-3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.cancel-reason-option:hover { border-color: var(--primary); }
+.cancel-reason-option input[type="radio"] { accent-color: var(--danger); width: 16px; height: 16px; }
+.cancel-reason-label {
+  font-size: 0.88rem;
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cancel-reason-label i { color: var(--text-muted); width: 18px; text-align: center; font-size: 0.85rem; }
+
+.other-reason-group { margin-bottom: 20px; }
+.other-reason-group label {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+.other-reason-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--dark-3);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  resize: vertical;
+}
+.other-reason-group textarea:focus { outline: none; border-color: var(--primary); }
+.word-count {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: right;
+  margin-top: 4px;
+}
+.word-count.limit { color: var(--danger); font-weight: 600; }
+
+.cancel-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+@media (max-width: 480px) {
+  .cancel-modal { padding: 24px 18px; }
+  .cancel-modal-actions { flex-direction: column-reverse; }
+  .cancel-modal-actions .btn { width: 100%; justify-content: center; }
+}
+</style>
+
+<script>
+function showCancelModal(orderId, orderNumber) {
+  document.getElementById('cancelOrderId').value = orderId;
+  document.getElementById('cancelOrderNumber').textContent = orderNumber;
+  document.getElementById('cancelModal').classList.add('active');
+  document.getElementById('cancelForm').reset();
+  document.getElementById('otherReasonGroup').style.display = 'none';
+  document.getElementById('wordCount').textContent = '0 / 50 words';
+  document.getElementById('wordCount').classList.remove('limit');
+}
+
+function closeCancelModal(e) {
+  if (e.target === e.currentTarget) {
+    document.getElementById('cancelModal').classList.remove('active');
+  }
+}
+
+function toggleOtherReason(show) {
+  document.getElementById('otherReasonGroup').style.display = show ? 'block' : 'none';
+  if (!show) document.getElementById('otherReasonText').value = '';
+}
+
+function getWordCount(text) {
+  return text.trim().split(/\s+/).filter(w => w.length > 0).length;
+}
+
+function updateWordCount() {
+  const text = document.getElementById('otherReasonText').value;
+  const count = getWordCount(text);
+  const el = document.getElementById('wordCount');
+  el.textContent = count + ' / 50 words';
+  if (count > 50) {
+    el.classList.add('limit');
+  } else {
+    el.classList.remove('limit');
+  }
+}
+
+function validateCancelForm(e) {
+  e.preventDefault();
+  const form = document.getElementById('cancelForm');
+  const reason = form.querySelector('input[name="reason"]:checked');
+  if (!reason) {
+    alert('Please select a reason for cancellation');
+    return false;
+  }
+
+  if (reason.value === 'Other') {
+    const text = document.getElementById('otherReasonText').value.trim();
+    const count = getWordCount(text);
+    if (count < 10) {
+      alert('Please enter at least 10 words');
+      return false;
+    }
+    if (count > 50) {
+      alert('Reason cannot exceed 50 words');
+      return false;
+    }
+  }
+
+  if (!confirm('Are you sure you want to cancel this order? This cannot be undone.')) {
+    return false;
+  }
+
+  const orderId = document.getElementById('cancelOrderId').value;
+  let finalReason = reason.value;
+  if (reason.value === 'Other') {
+    finalReason = 'Other: ' + document.getElementById('otherReasonText').value.trim();
+  }
+
+  fetch('/orders/' + orderId + '/cancel', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ cancel_reason: finalReason })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      document.getElementById('cancelModal').classList.remove('active');
+      location.reload();
+    } else {
+      alert(data.error || 'Failed to cancel order');
+    }
+  })
+  .catch(() => alert('Something went wrong'));
+
+  return false;
+}
+</script>
 
 <%- include('partials/footer') %>

@@ -317,13 +317,49 @@ router.post('/account', requireCustomer, (req, res) => {
 router.get('/orders', requireCustomer, (req, res) => {
   const customer = findById('customers', req.session.customer.id);
   const db = getDB();
-  // Match by customer_id OR by email (fallback for older orders)
   const orders = db.get('orders')
     .filter(o => o.customer_id === req.session.customer.id || o.customer_email === customer.email)
     .sortBy('created_at')
     .reverse()
     .value();
   res.render('order-history', { title: 'My Orders', orders, customer });
+});
+
+router.post('/orders/:id/cancel', requireCustomer, (req, res) => {
+  const db = getDB();
+  const order = db.get('orders').find({ id: parseInt(req.params.id) }).value();
+
+  if (!order) return res.status(404).json({ error: 'Order not found' });
+
+  if (order.customer_id !== req.session.customer.id && order.customer_email !== req.session.customer.email) {
+    return res.status(403).json({ error: 'Not authorized' });
+  }
+
+  if (!['pending', 'confirmed'].includes(order.order_status)) {
+    return res.status(400).json({ error: 'This order cannot be cancelled' });
+  }
+
+  const { cancel_reason } = req.body;
+  if (!cancel_reason || cancel_reason.trim().length < 5) {
+    return res.status(400).json({ error: 'Please provide a valid reason' });
+  }
+
+  db.get('orders').find({ id: order.id }).assign({
+    order_status: 'cancelled',
+    cancel_reason: cancel_reason.trim(),
+    updated_at: new Date().toISOString()
+  }).write();
+
+  // Restore stock
+  const items = db.get('order_items').filter({ order_id: order.id }).value();
+  items.forEach(item => {
+    const product = db.get('products').find({ id: item.product_id }).value();
+    if (product) {
+      db.get('products').find({ id: item.product_id }).assign({ stock: product.stock + item.quantity }).write();
+    }
+  });
+
+  res.json({ success: true });
 });
 
 // ==================== LOGOUT ====================
