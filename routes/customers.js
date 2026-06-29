@@ -158,6 +158,75 @@ router.get('/login', (req, res) => {
   res.render('login', { title: 'Login', error: req.query.error || null, login: null });
 });
 
+// ==================== FORGOT PASSWORD ====================
+router.get('/forgot-password', (req, res) => {
+  if (req.session.customer) return res.redirect('/account');
+  res.render('forgot-password', { title: 'Forgot Password', error: null, success: null, email: '' });
+});
+
+router.post('/forgot-password', async (req, res) => {
+  const { email } = req.body;
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+    return res.render('forgot-password', { title: 'Forgot Password', error: 'Please enter a valid email address', success: null, email });
+  }
+
+  const customer = findByKey('customers', { email: email.toLowerCase().trim() });
+  if (!customer) {
+    return res.render('forgot-password', { title: 'Forgot Password', error: 'No account found with that email', success: null, email });
+  }
+
+  const code = generateCode();
+  const codeExpiry = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000);
+
+  req.session.passwordReset = {
+    customer_id: customer.id,
+    email: customer.email,
+    code,
+    codeExpiry: codeExpiry.toISOString()
+  };
+
+  await sendVerificationEmail(customer.email, code, customer.name);
+
+  res.render('reset-password', { title: 'Reset Password', email: customer.email, error: null, success: 'Verification code sent!', code });
+});
+
+router.post('/reset-password', async (req, res) => {
+  const { email, code, new_password, confirm_password } = req.body;
+
+  if (!req.session.passwordReset) {
+    return res.render('forgot-password', { title: 'Forgot Password', error: 'Session expired. Please try again.', success: null, email: '' });
+  }
+
+  const pr = req.session.passwordReset;
+
+  if (new Date(pr.codeExpiry) < new Date()) {
+    delete req.session.passwordReset;
+    return res.render('forgot-password', { title: 'Forgot Password', error: 'Verification code expired. Please request a new one.', success: null, email: pr.email });
+  }
+
+  if (code.trim() !== pr.code) {
+    return res.render('reset-password', { title: 'Reset Password', email: pr.email, error: 'Invalid verification code', success: null, code: pr.code });
+  }
+
+  if (!new_password || new_password.length < 6) {
+    return res.render('reset-password', { title: 'Reset Password', email: pr.email, error: 'Password must be at least 6 characters', success: null, code: pr.code });
+  }
+
+  if (new_password !== confirm_password) {
+    return res.render('reset-password', { title: 'Reset Password', email: pr.email, error: 'Passwords do not match', success: null, code: pr.code });
+  }
+
+  updateOne('customers', { id: pr.customer_id }, {
+    password: bcrypt.hashSync(new_password, 10),
+    failed_attempts: 0,
+    locked_until: null
+  });
+
+  delete req.session.passwordReset;
+
+  res.render('login', { title: 'Login', error: null, login: null, successMsg: 'Password reset successfully! Please login with your new password.' });
+});
+
 router.post('/login', (req, res) => {
   const { login, password } = req.body;
 

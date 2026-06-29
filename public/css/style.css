@@ -4310,6 +4310,18 @@ img { max-width: 100%; height: auto; }
 
 .auth-form .btn-block { width: 100%; margin-top: 8px; }
 
+.forgot-password-link {
+  color: var(--primary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--transition);
+}
+.forgot-password-link:hover {
+  color: var(--primary-light);
+  text-decoration: underline;
+}
+
 .auth-footer {
   margin-top: 24px;
   font-size: 0.88rem;
