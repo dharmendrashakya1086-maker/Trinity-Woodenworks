@@ -116,10 +116,14 @@
                   </div>
                   <div class="product-actions">
                     <% if (product.stock > 0) { %>
-                      <a href="/buy/<%= product.id %>" class="btn btn-primary btn-sm btn-glow btn-buy-now" onclick="event.stopPropagation()">Buy Now</a>
-                      <button class="btn btn-outline-light btn-sm btn-add-cart" onclick="event.stopPropagation(); addToCart(<%= product.id %>)">
-                        <i class="fas fa-cart-plus"></i> Add
-                      </button>
+                      <% if (customer) { %>
+                        <a href="/buy/<%= product.id %>" class="btn btn-primary btn-sm btn-glow btn-buy-now" onclick="event.stopPropagation()">Buy Now</a>
+                        <button class="btn btn-outline-light btn-sm btn-add-cart" onclick="event.stopPropagation(); addToCart(<%= product.id %>)">
+                          <i class="fas fa-cart-plus"></i> Add
+                        </button>
+                      <% } else { %>
+                        <a href="/login" class="btn btn-outline-light btn-sm" onclick="event.stopPropagation()"><i class="fas fa-sign-in-alt"></i> Login to Buy</a>
+                      <% } %>
                     <% } else { %>
                       <span class="out-of-stock-label">Out of Stock</span>
                     <% } %>

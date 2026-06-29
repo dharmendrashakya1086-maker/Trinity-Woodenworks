@@ -2,7 +2,12 @@ const express = require('express');
 const router = express.Router();
 const { getDB } = require('../database');
 
-router.post('/add', (req, res) => {
+function requireCustomer(req, res, next) {
+  if (req.session.customer) return next();
+  return res.status(401).json({ error: 'login_required', message: 'Please login to continue' });
+}
+
+router.post('/add', requireCustomer, (req, res) => {
   const { product_id, quantity } = req.body;
   const db = getDB();
   const product = db.get('products').find({ id: parseInt(product_id), status: 'active' }).value();
@@ -29,7 +34,7 @@ router.post('/add', (req, res) => {
   res.json({ success: true, cartCount: req.session.cart.reduce((sum, item) => sum + item.quantity, 0) });
 });
 
-router.post('/update', (req, res) => {
+router.post('/update', requireCustomer, (req, res) => {
   const { product_id, quantity } = req.body;
   if (!req.session.cart) return res.status(400).json({ error: 'Cart is empty' });
 
@@ -45,7 +50,7 @@ router.post('/update', (req, res) => {
   res.json({ success: true, cartCount: req.session.cart.reduce((sum, item) => sum + item.quantity, 0) });
 });
 
-router.post('/remove', (req, res) => {
+router.post('/remove', requireCustomer, (req, res) => {
   const { product_id } = req.body;
   if (!req.session.cart) return res.status(400).json({ error: 'Cart is empty' });
 

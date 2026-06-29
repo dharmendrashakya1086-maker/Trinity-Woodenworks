@@ -83,12 +83,18 @@
             </div>
           </div>
           <div class="product-buy-buttons">
-            <a href="/buy/<%= product.id %>" class="btn btn-primary btn-lg btn-glow btn-buy-now" id="buyNowBtn">
-              <i class="fas fa-bolt"></i> Buy Now
-            </a>
-            <button class="btn btn-outline-light btn-lg" onclick="addToCartDetail(<%= product.id %>)">
-              <i class="fas fa-cart-plus"></i> Add to Cart
-            </button>
+            <% if (customer) { %>
+              <a href="/buy/<%= product.id %>" class="btn btn-primary btn-lg btn-glow btn-buy-now" id="buyNowBtn">
+                <i class="fas fa-bolt"></i> Buy Now
+              </a>
+              <button class="btn btn-outline-light btn-lg" onclick="addToCartDetail(<%= product.id %>)">
+                <i class="fas fa-cart-plus"></i> Add to Cart
+              </button>
+            <% } else { %>
+              <a href="/login" class="btn btn-primary btn-lg btn-glow">
+                <i class="fas fa-sign-in-alt"></i> Login to Buy
+              </a>
+            <% } %>
           </div>
         </div>
         <% } else { %>

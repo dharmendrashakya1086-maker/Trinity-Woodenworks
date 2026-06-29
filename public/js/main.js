@@ -11,8 +11,16 @@ function addToCart(productId, quantity = 1) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ product_id: productId, quantity: quantity })
   })
-  .then(res => res.json())
+  .then(res => {
+    if (res.status === 401) {
+      showToast('Please login to continue', 'error');
+      setTimeout(() => window.location.href = '/login', 1000);
+      return null;
+    }
+    return res.json();
+  })
   .then(data => {
+    if (!data) return;
     if (data.success) {
       showToast('Product added to cart!', 'success');
       updateCartBadge(data.cartCount);

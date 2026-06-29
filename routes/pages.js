@@ -2,6 +2,12 @@ const express = require('express');
 const router = express.Router();
 const { getDB } = require('../database');
 
+function requireCustomer(req, res, next) {
+  if (req.session.customer) return next();
+  req.session.returnTo = req.originalUrl;
+  res.redirect('/login');
+}
+
 router.get('/', (req, res) => {
   const db = getDB();
   const featuredCategories = db.get('categories').filter({ featured: 1 }).value().map(c => ({
@@ -87,7 +93,7 @@ router.get('/product/:id', (req, res) => {
 });
 
 // Direct buy - add to cart and go to checkout
-router.get('/buy/:id', (req, res) => {
+router.get('/buy/:id', requireCustomer, (req, res) => {
   const db = getDB();
   const product = db.get('products').find({ id: parseInt(req.params.id), status: 'active' }).value();
   if (!product) return res.redirect('/shop');
@@ -106,7 +112,7 @@ router.get('/buy/:id', (req, res) => {
   res.redirect('/checkout');
 });
 
-router.get('/checkout', (req, res) => {
+router.get('/checkout', requireCustomer, (req, res) => {
   const cart = req.session.cart || [];
   if (cart.length === 0) return res.redirect('/cart');
 
